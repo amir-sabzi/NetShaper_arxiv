@@ -1,0 +1,259 @@
+\section{Overview}
+\label{sec:overview}
+
+
+%Protecting clients' privacy requires ensuring confidentiality of their network
+%traffic content.
+%The content may be leaked through the traffic shape, \ie, the packet sizes,
+%inter-packet intervals, and the direction of the traffic. Additionally, it may
+%be leaked through the time of a client's initiation of communication with a
+%service, and the duration of the communication.
+%\todo{In applications where the traffic passes through multiple nodes on the
+%Internet, the content may additionally be correlated with the sequence of
+%interactions with the nodes, which constitute a traffic DAG (directed acyclic
+%graph).}
+
+%\am{Describe a real-world motivating example.}
+
+A secure and practical {\nsca} mitigation system must satisfy the following
+design goals:
+{\bf G1.} Address leaks through all aspects of the shape of transmitted traffic,
+{\bf G2.} Provide quantifiable and tunable privacy guarantees for the
+communication parties,
+{\bf G3.} Minimize overheads incurred while guaranteeing privacy,
+{\bf G4.} Support a broad class of applications, and
+{\bf G5.} Require minimal changes to the applications.
+%{\bf G5.} Enable tuning between privacy guarantees and overheads with minimal
+%changes modifications to the applications. {\as{Maybe we can combine G5 and G3}}
+
+{\sys}'s shaping prevents leaks of the traffic content through sizes, timing,
+and direction of packets \todo{along all communication links between application
+nodes} (G1).
+%\todo{It can also hide the precise times of network activity.} (G1).
+%
+We present the key ideas of {\sys}'s shaping that help achieve the remaining
+goals. We then present {\sys}'s threat model.
+%We present the key ideas of our solution that help achieve the above goals and
+%the threat model and assumptions we are operating on.
+%We start by listing the key goals for designing a {\nsca} mitigation system. We
+%then describe the threat model and assumptions we are operating on, and finally
+%the key ideas of our solution.
+
+%\subsection{Design goals}
+%\label{subsec:goals}
+\subsection{Key ideas}
+\label{subsec:key-ideas}
+
+\paragraph{Differentially private shaping.}
+%Ensuring confidentiality of content requires shaping the
+%packet sizes and timing along all links involved in a client's network traffic.
+
+%A strawman approach is constant shaping, which would require continuously
+%transmitting fixed-length packets with a fixed inter-packet interval.
+%Constant shaping is a secure approach, but can induce significant bandwidth and
+%latency overheads. Prior work has proposed ways to allow variations in traffic
+%shaping that reduce overheads at the cost of privacy leaks.
+%\todo
+As discussed in \S\ref{sec:intro}, unlike constant shaping and
+variable-but-static shaping, dynamic shaping offers the most flexibility for
+adapting traffic shape at runtime based on workload patterns and, therefore, can
+reduce significantly reduce overheads.
+%Dynamic shaping can help to reduce costs of mitigating network side channels at
+%the cost of some privacy leak.
+{Unfortunately, existing dynamic shaping techniques either have unbounded privacy
+leaks or offer only weak privacy guarantees.
+%Moreover, some of these techniques require extensive profiling of an
+%application's network traffic traces.
+}
+%\am{Check recent techniques.} \am{How can we compare privacy
+%leakage of k-anonymity vs differential privacy?}{\as{I think k-anonymity has
+%$\varepsilon$ of infinite as the output probability for any two trace from two
+%different groups of anonymity is not bounded.}}
+%
+%{\sys} instead relies on a dynamic shaping technique that provides
+%%allows variations in traffic shapes while providing
+%%\todo
+%{quantifiable privacy leaks with tunable bounds} and without requiring
+%extensive pre-profiling of application traffic.
+%%\todo{{\sys}'s shaping hides the time of initiation and termination of
+%%transmissions}, as well as the content of the transmissions (G1).
+%Specifically, {\sys} provides differential privacy guarantees in its shaping
+%(G2).
+%Specifically, it generates differentially-private burst length for transmission
+%in periodic intervals.
+{\sys}'s \todo{novel} differential privacy (DP) based shaping strategy provides
+quantifiable privacy leaks with tunable bounds and without relying on profiling
+of application traffic (G2).
+\todo{The DP guarantees are determined on fixed-length burst intervals and
+composed across consecutive intervals to quantify the overall privacy
+guarantees for an application.}
+%\am{\ml{@Mathias: verify if the above English explanation of the DP guarantees
+%is accurate.}}
+%
+%{\sys}'s shaping incurs lower overheads compared to constant shaping as well as
+%other prior techniques (G3).
+%We discuss the shaping technique in \S\ref{sec:dp} and evaluate its performance
+%in \S\ref{sec:eval}.
+
+\paragraph{Shaping in a middlebox.}
+%\S\ref{fig:minesvpn-overview} provides an overview of {\sys}'s architecture.
+{\sys} relies on the abstraction of a tunnel for implementing traffic shaping.
+Application traffic is shaped between the tunnel endpoints such that an
+adversary observing the tunnel traffic cannot infer application secrets.
+In principle, a tunnel endpoint could be integrated with the end host hosting an
+application (\eg in a VM isolated from the end-host application), or in a
+separate node through which the application's traffic passes.
+{\sys} relies on the second approach and implements the tunnel endpoint as a
+middlebox, which could be integrated with an existing network element, such as a
+router, a VPN gateway, or a firewall.
+%(see \S\ref{sec:implementation} for more details).
+The middlebox implementation enables securing multiple applications without
+requiring modifications on individual end hosts (G4).
+Furthermore, for multiple flows that require the same tunnel, it allows pooling
+the flows under the same privacy guarantees, which helps to amortize the
+per-flow overhead (G3).
+%We elaborate on the {\sys}'s implementation in \S\ref{sec:implementation} and
+%evaluate the performance optimization in \S\ref{sec:eval}.
+%\ml{Here we need to emphasize that sharing a pipe is very good for privacy
+%guarantees (assuming we evaluate it? To me that's a core benefit of the
+%middlebox deisgn so it'd be really good to have it.) Maybe something like
+%``Importantly, our middlebox design enables pooling multiple clients through
+%the same protected tunnel, providing privacy guarantees to mulitiple
+%connections at a fixed overhead (\S\ref{sec:dp}).''}
+
+\paragraph{Minimal modifications to end applications.}
+%\todo{TODO.}
+By default, {\sys} shapes all traffic through a tunnel with a fixed differential
+privacy guarantee, \ie with a single value of $\epsilon$ and $\delta$. However,
+an application can explicitly specify its privacy requirements ($\epsilon$ and
+$\delta$), as well as
+bandwidth and latency constraints, and any prioritization preferences on a
+per-flow basis to its local middlebox. This requires small modifications in the
+application to transmit a shaping configuration message to the middlebox along
+with the application flow. Thus, {\sys} offers a balance between being fully
+application-agnostic versus optimizing for privacy or overhead with minimal
+support from the applications (G2, G5).
+%\am{We need to know how {\sys} should use DP parameters for 5s intervals or for
+%sensitivity of 2MB.}
+
+\subsection{Threat Model}
+\label{subsec:threat-model}
+%{\sys}'s goal is to protect an application's secrets from being leaked to a
+%network adversary.
+%We assume that the communicating nodes are inside a trusted private network,
+%\eg behind a VPN gateway node, which an adversary cannot compromise.
+%\todo{We assume that all the application endpoints are non-malicious and do not
+%explicitly leak the secrets themselves. The secrets could be leaked only through
+%side channels. A service serving both privacy-sensitive and privacy-insensitive
+%clients is partitioned into two instances, with each instance dedicated to
+%serving clients with similar privacy requirements. For the privacy-sensitive
+%clients, we assume the corresponding service endpoint agrees to serve the
+%clients according to their privacy requirements.}
+
+%{\sys}’s goal is to protect an application’s secrets from being leaked to a
+%network adversary.
+{\sys}'s goal is to hide the content of an application's network
+traffic.
+%\todo{as well as the time of initiation and the duration of the network
+%activity}.
+%\am{Despite the ``always-on'' tunnels, we still have coarse-grained leaks of
+%start times of flows when a flow selects different DP parameters than default.
+%If we further imagine starting tunnels just before transmissions, such as for a
+%multi-hop scenario, we should not talk about hiding initiation times.}
+We assume that the communicating nodes are inside separate trusted private
+networks (\eg each node is behind a VPN gateway node), which an adversary
+cannot compromise. We assume that all the application endpoints are
+non-malicious and do not leak the secrets themselves.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% can handle non-sensitive traffic simultaneously by just using TDMA
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%Furthermore, we assume that applications transmitting only non-sensitive
+%traffic are partitioned from the applications transmitting sensitive traffic.
+%For instance, the non-sensitive applications use a different router.
+
+%We assume that the communication between all nodes in the client's traffic DAG
+%is encrypted.
+The adversary controls network links in the public Internet (\eg ISPs) and can
+record, measure, and tamper with the victim's traffic as it traverses through the
+links under the adversary's control.
+In particular, it can precisely record the traffic shape---the sizes, timing,
+and direction of packets---on all links in the victim's traffic
+\todo{communication graph}.
+Furthermore, the adversary can drop, replay, or inject packets into the victim's
+traffic.
+However, it cannot break standard cryptography, cannot compromise the victim's
+VPN, or cannot impersonate its clients or servers to directly interact with the
+victim \update{(thus, no covert attacks).}
+\update{We do not consider threats due to observing the IP addresses of packets,
+although {\sys} can hide IP addresses of application end hosts behind a shared
+traffic shaping tunnel.}
+%We also do not consider the threat where an adversary colocates with
+%the victim inside the victim's private network to observe the victim's traffic
+%shape through indirect contention signals~\cite{mehta2022pacer}.
+We also do not consider the threat where a victim accidentally installs a
+malicious script in the browser, thus enabling an adversary to colocate with the
+victim's application and observe its
+traffic~\cite{schuster2017beautyburst,mehta2022pacer}.  This is a reasonable assumption,
+since a colocated adversary can exploit many other direct or indirect channels
+for data leaks that will be far more efficient than
+{\nsc}s~\cite{kocher2018spectre, yarom2014flushreload, liu2015llcpractical, irazoqui2015ssa, vila2017loophole}.
+%\eg by renting a VM or by installing a malicious script from a malicious website
+%enticing the victim to accidentally install malicious scripts from a malicious
+%website.
+%\todo{TODO: how do we handle victim accidentally visiting malicious websites and
+%installing malicious javascript, etc. on its device? In other words, how do we
+%completely rule out colocated adversary?}
+
+%\todo{TODO: Describe the assumptions on adversary knowledge or capability w.r.t.
+%differential privacy.}
+
+In this paper, we focus on an implementation of {\sys}'s traffic shaping tunnel
+within a middlebox that can be placed in front of the gateway router of an
+organization.
+%We discuss implementation alternatives in \S\ref{sec:discussion}.
+%
+{\sys}'s trusted computing base (TCB) includes all components in the
+organization's private network and the middleboxes. We assume
+that the middleboxes do not directly leak application secrets to the adversary.
+In practice, bugs or vulnerabilities in the middleboxes could be eliminated
+using standard techniques, such as software fault isolation~\cite{tan2017sfi}. We
+assume the cryptographic libraries are side-channel
+free~\cite{almeida2016verifying}.
+%\todo{{\sys} prevents leaks of applications' secrets via side channels within its
+%    middleboxes, such as timing and microarchitectural side channels (see
+%    \S\ref{sec:implementation}).}
+
+{\sys} does not address leaks of one application's sensitive data through the
+traffic shape of colocated applications transmitting only non-sensitive traffic.
+Such leaks may arise, for instance, due to microarchitectural interference among
+the applications colocated on a host or among their flows if they pass through
+shared links. Mitigating such leaks would require physically isolating the
+applications and their flows. For instance, a service serving both
+privacy-sensitive and privacy-insensitive clients may be partitioned into two
+instances, with each instance dedicated to serving clients with similar privacy
+requirements. For the privacy-sensitive clients, we assume the corresponding
+service instance agrees to serve the clients according to their privacy
+requirements. Alternatively, end hosts could implement mitigations for various
+side channels to support colocated applications \cite{mehta2022pacer,
+page05partitionedcache, shi2011limiting, kim2012stealthmem,
+varadarajan2014scheduler, braun2015robust}. To mitigate leaks among colocated flows at shared
+links, {\sys} assumes that the network paths of the sensitive and non-sensitive
+flows are completely partitioned. In practice, this limitation can be removed by
+combining {\sys}’s traffic shaping with TDMA scheduling \cite{beams2021ifs,
+vattikonda2012tdma}.
+
+{\sys} does not prevent leaks of applications' secrets via side channels, \eg
+microarchitectural side channels, in its middleboxes. We discuss potential
+mitigations in \S\ref{subsec:impl-security}.
+
+\update{Under these assumptions, {\sys} prevents leaks of application secrets
+%\todo{and the timing of network activity}
+through the sizes and the delays between the network packets transmitted in
+either direction between the application endpoints.}
+%\todo{Although anonymity is not the focus of our work, {\sys} hides the number
+%and identity of the participants communicating between two sites.}
+
+%\update{Under these assumptions, {\sys} prevents leaks of application secrets
+%through the sizes of the network packets, the inter-packet intervals, the time
+%of initiation of a network activity, or the duration of network activity in
+%either direction of communication between the application endpoints.}

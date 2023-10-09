@@ -1,0 +1,50 @@
+%\am{To be revised.}
+
+The widespread adoption of encryption in network protocols has significantly
+improved the overall security of many Internet applications. However, these
+protocols cannot prevent {\em network side-channel leaks}---leaks of sensitive
+information through the sizes and timing of network packets. We present {\sys},
+a system that mitigates such leaks based on the principle of traffic shaping.
+%Unlike constant shaping,
+{\sys}’s traffic shaping provides differential privacy guarantees while adapting
+to the prevailing workload and congestion condition, and allows configuring a
+tradeoff between privacy guarantees, bandwidth and latency overheads.
+%which produces lower overheads with negligible privacy costs for applications.
+Furthermore, {\sys} provides a modular and portable tunnel endpoint design that
+can support diverse applications. We present a middlebox-based implementation of
+{\sys} and demonstrate its applicability in a video streaming and a web service
+application.
+%With a differential privacy guarantee ($\epsilon$) of \todo{1}, {\sys}’s
+%traffic shaping incurs upto \todo{x\%} average bandwidth overhead and at most
+%\todo{y\%} average latency overhead, and has no implications on end-user
+%experience and throughput with either application.
+
+%{\sys} incurs moderate overheads on bandwidth and latency, yet clients
+%experience no noticeable delays while downloading videos or web pages.
+
+%We present a theoretical analysis of privacy-bandwidth overhead tradeoff and,
+%through empirical evaluation, we show that {\sys} incurs moderate overheads on
+%bandwidth and latency.
+%Through theoretical analysis and empirical evaluation, we show that {\sys}
+%incurs moderate overheads on bandwidth and latency
+%Despite the overheads, clients experience no noticeable delays while downloading
+%videos or web pages. We present a new video classifier that outperforms a
+%state-of-the-art classifier on baseline traffic and show that {\sys}'s shaping
+%defeats both the classifiers even with low differential privacy guarantees.
+%With a differential privacy guarantee ($\epsilon$) of \todo{11.64}, {\sys}’s
+%traffic shaping incurs \todo{447\%} average bandwidth overhead and \todo{y\%}
+%average latency overhead, and has no implications on end user experience and
+%throughput with either application.
+
+\if 0
+We propose {\sys}, a system to mitigate {\nsca} leaks in Internet applications
+with quantifiable privacy guarantees. {\sys} enables adaptive traffic shaping
+with differential privacy guarantees on per-flow information leakage while
+respecting congestion control. {\sys} adopts a middlebox architecture and can
+support diverse applications.  We present an implementation of {\sys}
+architecture on a router integrating with a VPN service, and demonstrate its
+applicability in three applications---VoIP, video streaming, and geo-replicated
+web services.  {\sys}'s traffic shaping incurs at most \todo{x\%} on bandwidth
+overheads, \todo{y\%} on latency overheads, and \todo{z\%} on application
+throughput.
+\fi

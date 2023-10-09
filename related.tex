@@ -1,0 +1,379 @@
+\section{Related Work}
+\label{sec:related}
+
+%We discuss prior work on different threat models, goals,
+%architectures, and strategies for mitigating network side channels.
+%We discuss prior work along three axes: shaping strategy,
+%system architecture, and threat model and goals.
+
+\textbf{Traffic shaping for web.}
+Prior work used traffic shaping~for defending against website
+fingerprinting attacks.
+%These strategies can be classified into two types: static and dynamic.
+%
+Walkie-Talkie \cite{wang2017walkietalkie}, Supersequence
+\noindent \cite{wang2014supersequence}, and Glove \cite{nithyanand2014glove} use
+clustering techniques to group objects of a corpus and then shape the
+traffic of all objects within each cluster to conform to a similar pattern.
+Traffic morphing \cite{wright2009morphing} makes the traffic of one page look
+like that of another.
+These techniques compute traffic shapes that envelope or resemble the network
+traces of individual objects. Hence, they require a large number of
+traces to account for network variations.
+{\sys} dynamically adapts traffic shapes based on the
+prevailing network~conditions.
+%while conforming with DP guarantees
+%and, thus is, computationally less expensive.
+
+%BuFLO~\cite{dyer2012peekaboo},
+Cs-BuFLO~\cite{cai2014csbuflo}, Tamaraw~\cite{cai2014tamaraw}, and
+DynaFlow~\cite{lu2018dynaflow}, determine traffic shape directly at runtime.
+%and FRONT and GLUE~\cite{gong2020zero} are
+%dynamic techniques that determine traffic shape at runtime.
+They pad object sizes to values that are correlated
+with the original object sizes, such as the next
+multiple or power of a configurable constant.
+%The constants determine
+%%the padding overhead and
+%the number of objects padded to the same size.
+These defenses provide privacy akin to k-anonymity, but have no control on the
+the size of the anonymous cluster.
+Tamaraw\cite{cai2014tamaraw} formalizes the privacy guarantees.
+{\sys}'s DP guarantees are strictly stronger than Tamaraw's (proof
+in~\S\ref{appendix:tamaraw}).
+%\todo{{\sys} provides a stronger privacy guarantee based on DP (see
+%\S\ref{appendix:tamaraw} for a proof).}
+%Tamaraw provides a mathematical model to quantify the privacy guarantees of
+%fingerprinting defenses.
+%
+%We prove that their notion of privacy is strictly weaker than differential
+%privacy for traffic streams (see \Cref{appendix:tamaraw}).
+%FRONT~\cite{gong2020zero} only obfuscates the beginning of the network
+%traces of web pages.
+%and the gap between consecutive traces, respectively.
+%by adding random amount of dummy packets.
+%BuFLO and Cs-BuFLO transmit fixed-sized packets at constant rate over a
+%predefined duration of time. GLUE is specifically designed to obfuscate the
+%beginning and end of a web trace by introducing additional packets between
+%traces originating from different webpages.
+
+%Despite extensive profiling, these techniques are unlikely to be able to cover
+%all network conditions at runtime.
+%{\sys}, on the other hand, is a dynamic traffic shaping solution, which
+%provides strong, quantifiable differential privacy guarantees on both packet
+%sizes and timing.
+
+\textbf{Differential privacy over streams.}
+%\textbf{Differential Privacy.}
+%Kellaris et al.~\cite{kellaris2014differentially} also study DP over streams.
+%They introduce \textit{$w$-event} privacy based on a neighboring definition that
+%only allows stream to differ over {\em one} window $w$.
+Dwork et al.~\cite{dwork2010dpcontinual} study DP on streams, in which
+neighboring streams differ in at most one element and the query
+counts over the stream prefix (without forgetting
+old information) under a fixed DP budget for the entire stream.
+%is constantly updated over time
+%This paper focues on a different setting than ours, in which neighboring streams
+%differing in only one element, but the DP query (here a counter) is constantly
+%updated over time without forgetting past information (the counter counts the
+%whole prefix of the stream), under a fixed DP budget for the entire stream.
+{\sys} requires a stronger neighboring definition to model application data
+streams (Def. \ref{def:neighboring-streams}), but is able to forget the past by
+dropping stale data from our queue (\Cref{assumption:window}) and compose
+privacy loss over time.
+
+{\sys}'s neighboring definition is closer to that of user-level DP over streams
+in \cite{dwork2010pan}. Instead of counting discrete change,
+however, we use the L1 distance which enables coarsening.
+Pan-privacy considers an adversary that can compromise the internals of
+the algorithms (\eg our buffering queue). This makes the design of algorithms
+challenging and costly.
+%(the paper provides several impossibility results).
+Instead, we consider the buffering queue private and focus on
+practical algorithms to study the privacy/overheads trade-off.
+
+%\ml{[I we want to cite pan-privacy] Another work \todo{[cite Pan-privacy]}
+%considers user-level DP over streams, which allows for larger changes and is
+%closer to our own neighbouring definition (although we use the L1 distance which
+%enables coarsening, not counts of discrete change). This paper considers a
+%stronger threat model, called PAN-privacy, where an attacker can compromise the
+%internals of the algorithms (e.g. our buffering queue). This makes the design of
+%algorithms much more challenging and costly (the paper provides several
+%impossibility results). Instead, we consider the buffering queue private and
+%focus on practical algorithms to study the privacy/utility trade-off.}
+
+Kellaris et al.~\cite{kellaris2014differentially} introduce a notion of DP,
+called $w$-event privacy, for streams of length $w$.
+%Each event in a stream is~a query result on a static database state at a
+%specific timestamp.
+Neighboring stream pairs are those whose individual events are pairwise
+neighbors within a window of upto $w$.
+%Neighboring streams are otherwise identical.
+%This is not a practical neighboring definition for the
+%streams we consider, and would provide weak privacy.
+%{\sys}'s ``database'' consists of video streams and its
+{\sys}'s neighboring definition accounts for the maximum stream distance over
+{\em any} window of length $\winlen$, which is a better match for the streams
+we consider.
+%{\sys} also uses the L1-norm distance between streams, whereas $w$-event privacy
+%considers the number of differences for discrete elements.
+
+%\ml{Not doing it as I'm not sure if there are other reasons, but I suggest
+%    moving this one last of this section.}
+%In a similar work,
+Zhang et al.~\cite{zhang2019statistical} generate differentially private shapes
+for video streams using Fourier Perturbation Algorithm (FPA)
+\cite{rastogi2010differentially}.
+FPA transforms a finite time series of bursts, into a series of DP shaped bursts
+of the same length.
+FPA requires the entire stream's profile upfront, and cannot guarantee complete
+transmission of an input stream within the shaped trace.
+%Unlike {\sys}'s dynamic shaping mechanism, however, FPA requires predefined
+%time series associated with traffic traces in advance.
+{\sys}'s DP guarantees simply compose over burst interval sequences, thus
+allowing shaping of streams of arbitrary lengths with
+quantifiable privacy and overheads.
+%{\sys} does not constrain transmission duration; rather it can provide DP
+%guarantees composed over burst interval sequences of arbitrary lengths.
+%{\sys} dynamically shapes bursts in periodic intervals; the DP guarantees
+%compose over burst-interval sequences of arbitrary lengths.
+%Moreover, it is not guaranteed that the FPA algorithm's output will have
+%sufficient capacity (in terms of number of bytes) to accommodate the input
+%traffic trace. Authors refer to this issue as deficit phenomena.
+
+
+
+
+%\paragraph{Mitigations for VoIP.}
+
+%\paragraph{Network side-channel mitigation in IoT traffic.}
+
+%\if 0
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% remove due to space constraints
+%% point covered in intro
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\textbf{Adversarial defenses.}
+%Given the recent advancements in machine learning-based traffic analysis
+%attacks, new defensive mechanisms based on adversarial examples have emerged.
+%Mockingbird~\cite{rahman2020mockingbird} and Dolos~\cite{shan2021dolos} attempt
+%to defeat existing classifiers using adversarial inputs.
+%Dolos~\cite{shan2021dolos} computes input-agnostic adversarial patches of dummy
+%packets.
+%Mockingbird~\cite{rahman2020mockingbird} uses an optimization problem to make
+%one stream look like another by adding adversarial inputs to the input stream.
+Adversarial defenses~\cite{rahman2020mockingbird, hou2020wf, abusnaina2020dfd,
+shan2021dolos, nasr2021defeating, gong2022surakav}
+generate targeted and low-overhead noise to defeat specific classifiers.
+%attempt to defeat existing classifiers with small amounts of carefully-crafted
+%perturbations in the input streams.
+%The targeted noise incurs less overhead but cannot defeat another classifier.
+%However, the adversarial examples generated for one classifier may not
+%generalize to another classifier.
+%However, an adversary can train its classifier with adversarial
+%samples to become resilient to defenses.
+%Thus, this approach leads to an arms race between attackers and defenders.
+{\sys} provides provable and configurable privacy against both SOTA as
+well as future classifiers.
+%\fi
+
+
+\if 0
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% skip due to space constraints
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\paragraph{Mitigations for contention-based network side channels.}
+An adversary may be colocated with a victim in the same network and may share
+links with a victim’s traffic (e.g., a tenant VM colocated on a Cloud server or
+rack). In such a scenario, the adversary can induce contention with the victim’s
+traffic on a shared link and use the resulting variations in its own traffic
+shape to infer the victim’s traffic shape and ultimately the victim’s secrets.
+Such leaks can be mitigated using TDMA
+scheduling on the shared links \cite{vattikonda2012tdma, beams2021ifs},
+%or by physically isolating the network of the tenants,
+which eliminates the
+adversary’s ability to observe the victim’s traffic. {\sys} focuses
+on an orthogonal threat model where the adversary is privileged and owns (a
+part) of the victim’s network path (\eg ISP). It may be infeasible for a tenant
+to achieve isolation from the adversary (ISP); thus, {\sys} leverages traffic
+shaping to protect the victim’s traffic in the face of adversarial observations.
+\fi
+
+\textbf{Network side-channel mitigation systems.}
+%\textbf{Pacer.}
+%Pacer \cite{mehta2022pacer} proposes the idea of a cloaked tunnel, which is
+%conceptually similar to {\sys}’s shaping tunnel.
+{\sys}'s shaping tunnel is conceptually similar to Pacer's~\cite{mehta2022pacer}
+cloaked tunnel.
+%However, they are similarity ends there.
+%have different threat models.
+%First,
+However, Pacer mitigates leaks of a Cloud tenant's secrets to a
+colocated adversary through contention at shared network links.
+%Thus, Pacer's tunnel endpoint must be integrated with end hosts.
+Pacer's cloaked tunnel controls the transmit time of
+TCP packets in accordance with the shaping schedule and congestion control
+signals. Thus, Pacer requires
+non-trivial changes to the network stack on the end hosts.
+%First, Pacer’s focus is on an adversary colocated with an application on the end
+%host, which infers the application’s traffic shape through indirect
+%contention-based side channels.
+%Secondly, Pacer implements pacing below the transport layer, which forces it to
+%implement congestion awareness in the pacing component. Therefore, Pacer’s
+%tunnel endpoint is tightly integrated with end hosts and requires non-trivial
+%changes to the network stack on the end hosts.
+%
+%In {\sys} protects the traffic of applications from an adversary on the public
+%Internet.
+{\sys} protects applications that are behind private networks but communicate
+using the public Internet.
+{\sys}'s tunnel endpoints can be placed at the interface of
+the private-public networks, \eg in a middlebox, thus supporting
+multiple applications without modifying end hosts.
+Moreover, by shaping above the transport layer, {\sys} needs to control only the
+precise timing for generation of bursts of DP length and not the subsequent
+%packetization and
+transmission to the network.
+%Thus, {\sys}'s design is more modular and portable than Pacer's.
+
+%Besides the tunnel architecture, the
+%The shaping strategies of Pacer and {\sys} differ as well.
+%Pacer splits a server's dataset into clusters of a minimum size $k$, while
+%minimizing padding overhead for the dataset. For each cluster, Pacer then
+%computes a traffic shape based on network traces of all cluster objects.
+%Pacer's clustering may not suffice to protect objects within the clusters
+%against an adversary with information about the popularity of objects within the
+%cluster.
+%{\sys}'s DP shaping guarantees privacy even against a strong adversary with
+%auxiliary information.
+%\todo{{\sys}'s overheads are comparable to Pacer's.}
+%Pacer assumes that the shape of clients' requests to services is non-sensitive
+%and thus shapes only the server responses. Furthermore, Pacer clusters a
+%server's dataset into clusters of a minimum size k, while minimizing padding
+%overhead for the dataset. These assumptions and optimizations may not suffice
+%when an adversary has auxiliary information, such as the popularity of
+%individual objects during different times of the day. {\sys}’s DP shaping hides
+%the timing as well as the content of the traffic even from a strong adversary
+%with access to auxiliary information.
+%\todo{Despite the stronger privacy guarantees, {\sys}’s overheads are comparable
+%to Pacer's.} {\as{does that mean our guarantees are stronger than pacer? in
+%that case I don't think it is correct.}}
+
+Ditto~\cite{meier2022ditto} and {\sys} propose shaping traffic at network nodes
+separate from end hosts.
+%Ditto~\cite{meier2022ditto} implements shaping in programmable switches, while
+{\sys} proposes a hardware-independent, modular and portable
+middlebox architecture that can be integrated with end hosts, routers,
+gateways, or even programmable switches as in Ditto.
+%{\sys}'s middlebox architecture is hardware-independent, modular and portable,
+%and can be integrated with either end hosts or intermediate nodes, such as
+%routers, or gateways.
+
+%\todo{
+%%Ditto defines a sequence of packet sizes and send packets at fixed
+%%interval regardless of the size and timing of application packets.
+%%It pads application packets to ensure that their sizes follow the predefined
+%%sequence and buffers them to maintain the fixed packet interval.
+%Unlike Ditto, {\sys} dynamically shapes traffic based on application traffic
+%while maintaining DP guarantees.
+%}
+
+%\textbf{Censorship circumvention proxies.}
+\textbf{Systems with other goals.}
+%Tor \cite{Tor}, FTE \cite{dyer2013protocol}, Scramblesuit
+%\cite{winter2013scramblesuit}, Skypemorph \cite{mohajeri2012skypemorph}, Balboa
+%\cite{rosen2021balboa}, DeltaShaper \cite{barradas2017deltashaper}, and Protozoa
+%\cite{barradas2020poking} are
+Censorship circumvention systems~\cite{mohajeri2012skypemorph,
+winter2013scramblesuit, barradas2017deltashaper,
+barradas2020poking, rosen2021balboa}
+rely on traffic obfuscation, scrambling, and transformations of a sensitive
+application’s shape to that of a non-sensitive application. These techniques
+prevent identification of original protocols by deep packet inspection,
+but do not prevent inference of secrets from traffic shapes.
+%Unlike {\sys}, they do not prevent inference of secrets from traffic shapes.
+%They rely on Pluggable Transports (PTs), which is a SOCKS proxy-based
+%architecture. PTs run on application end hosts or on trusted nodes in the Tor
+%network and communicate over HTTP(S).
+%In contrast, {\sys} ensures privacy of the traffic content from an adversary.
+%{\sys}'s design is modular and portable.
+%For instance, it can integrate a SOCKS proxy in the {\ushaper} process, although,
+%its own transport-layer proxy can accept arbitrary application protocols.
+
+\if 0
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% remove due to space constraints
+%% points covered in intro and design
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+QCSD~\cite{smith2022qcsd} is a client-side only defense framework for website
+fingerprinting attacks. QCSD instructs the server about sending payload or dummy
+data using flow control signals in the headers of the QUIC packets sent from the
+client. Moreover, it uses QUIC's PADDING frames to transmit dummy data.
+Unlike the STREAM frames, PADDING frames do not generate
+acknowledgements \cite{rfc9000} and, thus, are distinguishable on the network.
+Overall, QCSD is a best-effort approach and cannot provide {\sys}'s guarantees.
+%To shape the traffic from the server to the client, it leverages the per-stream
+%flow control of QUIC to determine when to send actual data, dummy data, or a
+%combination of both.
+%It is important to note that QCSD is a best-effort approach and does not
+%provide a guarantee that the traffic shaping will perfectly match the defense
+%mechanism in either directions. Therefore, the QCSD framework is not
+%appropriate for emulating the traffic shaping mechanism of {\sys}.
+\fi
+
+\if 0
+\paragraph{Limitations of QUIC features.}
+An alternative design approach is to utilize QUIC padding frames instead of
+introducing a separate dummy stream to the connection. However, as stated in the
+QUIC specification~\cite{rfc9000}, padding frames are not acknowledged by the
+receiver. This poses a significant challenge for us since we require all events
+observable by potential adversaries, including ACK messages, to be independent
+of the content of streams.
+MASQUE (Multiplexed Application Substrate over QUIC Encryption) is a framework
+that facilitates the simultaneous execution of multiple networking applications
+within an HTTP/3 connection and enables a QUIC client to negotiate proxying
+capabilities with an HTTP/3 server.
+While MASQUE currently lacks a stable specification and implementation, it holds
+potential for providing negotiation capabilities for {\sys} in the future.
+\fi
+
+%\textbf{Metadata private communication.}
+%\textbf{Anonymous communication.}
+Karaoke~\cite{lazar2018karaoke} and Vuvuzela~\cite{van2015vuvuzela} are
+anonymous messaging systems that use~DP to hide participants in a conversation,
+but use constant-rate traffic among the participants.
+\update{
+AnoA~\cite{backes2013anoa} is a framework to analyze anonymity
+properties of anonymous communication
+protocols. AnoA supports DP based quantification for various
+properties, such as sender anonymity and sender unlinkability.
+%AnoA~\cite{backes2013anoa} is an anonymity analysis framework that establishes
+%quantifiable and comparable anonymity properties, taking inspiration from
+%privacy frameworks such as differential privacy.
+%AnoA provides metrics to quantitatively assess the anonymity provided by an
+%Anonymous Communication Protocol.
+}
+%differential privacy to hide  participants  in a message
+%conversation, but rely on constant traffic shaping  among the participants.
+{\sys}'s differentially-private traffic shaping hides the traffic content. In
+principle, {\sys} could be combined with an anonymous communication system to
+provide both content privacy and anonymity with~DP.
+
+%\todo
+%{
+%\paragraph{Other Methods (To Add).}
+%\begin{enumerate}
+%\item DFD~\cite{abusnaina2020dfd}: Stochastically extends the size of traffic
+%bursts to confuse the classifier.
+%\item WF-GAN~\cite{hou2020wf}: Using a Generator/Discriminator to add
+%adversarial noise to traffic such that the classifier missclassifies the input.
+%\item Mockingbird~\cite{rahman2020mockingbird}: Molds traffic sequence to match
+%Adversarial Example sequences generated against an effective Deep Learning
+%classifier.
+%\item Dolos~\cite{shan2021real}:injects dummy packets into traffic traces by
+%computing input-agnostic adversarial patches that disrupt deep learning
+%classifiers used in WF attacks. Patches are applied in real time and
+%parameterized by a user-side secret, ensuring that attackers cannot use
+%adversarial training to defeat Dolos.
+%\end{enumerate}
+%}

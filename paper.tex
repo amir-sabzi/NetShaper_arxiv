@@ -1,0 +1,252 @@
+\documentclass[letterpaper,twocolumn,10pt]{article}
+\usepackage{usenix2019_v3}
+\usepackage{caption}
+%\usepackage{authblk}
+% to be able to draw some self-contained figs
+% \usepackage[ruled,vlined,linesnumbered,noresetcount]{algorithm2e}
+\usepackage[noend]{algpseudocode}
+% \usepackage{algorithm,caption}
+% \algsetup{indent=2em}
+\renewcommand{\algorithmiccomment}[1]{\hspace{2em}// #1}
+%\usepackage[bottom]{footmisc}
+
+%\usepackage[normalem]{ulem}
+%\usepackage{siunitx}
+%\usepackage{mathpartir}
+
+
+% Commands and packages for annotation
+\usepackage[linesnumbered,ruled,vlined]{algorithm2e}
+
+
+%\usepackage{multicol}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage[normalem]{ulem}
+\usepackage{mathtools, nccmath}
+%\usepackage{comment}
+
+% for subfigure
+\usepackage{caption}
+\usepackage{subcaption}
+% To generate dummy text
+%\usepackage{blindtext}
+
+% citations, section references
+\usepackage{cite}
+\usepackage{hyperref}
+%\usepackage{subfig}
+%\usepackage{subfigure}
+%\captionsetup[figure]{font=small,skip=5pt}
+\usepackage{cleveref}
+
+%\usepackage[pdftex]{graphicx}
+\usepackage{graphicx}
+
+\usepackage[normalem]{ulem}
+
+% for good table formatting
+\usepackage{booktabs}
+\usepackage{xcolor}
+\definecolor{forestgreen}{RGB}{34, 139, 34}
+
+\usepackage{bbold}
+\usepackage{amsmath,amssymb}
+\usepackage{dsfont}
+
+\creflabelformat{equation}{#2\textup{#1}#3}
+%\crefname{equation}{eq}{eq}
+
+\newtheorem{definition}{Definition}
+\newtheorem*{definition*}{Definition}
+\crefname{definition}{Def}{Def}
+\crefname{definition*}{Def}{Def}
+
+\newtheorem{proposition}{Proposition}
+\newtheorem*{proposition*}{Proposition}
+\crefname{proposition}{Prop}{Prop}
+\crefname{proposition*}{Prop}{Prop}
+
+\newtheorem{corollary}{Corollary}
+\newtheorem*{corollary*}{Corollary}
+\crefname{corollary}{Corollary}{Corollary}
+\crefname{corollary*}{Corollary}{Corollary}
+
+\newtheorem*{lemma*}{Lemma}
+\newtheorem{lemma}{Lemma}
+\crefname{lemma}{Lemma}{Lemma}
+\crefname{lemma*}{Lemma}{Lemma}
+\newtheorem{assumption}{Assumption}
+\newtheorem*{assumption*}{Assumption}
+\newenvironment{proofsketch}{%
+    \renewcommand{\proofname}{Proof sketch}\proof}{\endproof}
+
+\newtheoremstyle{TheoremNum}
+{\topsep}{\topsep}              %%% space between body and thm
+{\itshape}                      %%% Thm body font
+{}                              %%% Indent amount (empty = no indent)
+{\bfseries}                     %%% Thm head font
+{.}                             %%% Punctuation after thm head
+{ }                             %%% Space after thm head
+{\thmname{#1}\thmnote{ \bfseries #3}}%%% Thm head spec
+\theoremstyle{TheoremNum}
+\newtheorem{numprop}{Proposition}
+
+\DeclareMathOperator*{\argmax}{argmax}
+%\newcommand{\circled}[1]{\raisebox{.5pt}{\textcircled{\raisebox{-.9pt} {#1}}}}
+\usepackage{tikz}
+\newcommand*\circled[1]{\tikz[baseline=(char.base)]{
+        \node[shape=circle,draw,inner sep=1pt] (char) {#1};}}
+
+\newcommand{\sys}{{NetShaper}}
+\newcommand{\nsc}{network side channel}
+\newcommand{\nsca}{network side-channel}
+\newcommand{\eg}{e.g.,~}
+\newcommand{\ie}{i.e.,~}
+\newcommand{\medvid}{MedFlix}
+\newcommand{\flowmap}{\texttt{FlowMap}}
+\newcommand{\prepare}{\texttt{Prepare}}
+\newcommand{\ushaper}{\texttt{UShaper}}
+\newcommand{\dshaper}{\texttt{DShaper}}
+
+\newcommand{\1}{\mathds{1}}
+\newcommand{\istream}{S}
+%\newcommand{\ostream}{S^{\epsilon,\delta}}
+\newcommand{\ostream}{O}
+\newcommand{\istreamw}{S_w}
+\newcommand{\ostreamw}{O_w}
+\newcommand{\streamduration}{\tau}
+\newcommand{\streamdurationcfg}{\tau}
+\newcommand\norm[1]{\|#1\|}
+\newcommand{\ssens}{\Delta_{\winlen}}
+\newcommand{\qsens}{\Delta_\dpintvl}
+\newcommand{\winlen}{W}
+\newcommand{\window}{w}
+\newcommand{\stream}{S}
+\newcommand{\unshapedQ}{Q}
+\newcommand{\buffQ}{Q}
+\newcommand{\shapedQ}{\bar{Q}}
+\newcommand{\streamw}[1]{S_{#1}}
+\newcommand{\qlen}{L}
+\newcommand{\dpintvl}{T}
+\newcommand{\qlent}[1]{L_{#1}}
+\newcommand{\qlendp}{\tilde{L}}
+\newcommand{\qlendpt}[1]{\tilde{L}_{#1}}
+%\newcommand{\qlendp}{L^{\epsilon_\dpintvl, \delta_\dpintvl}}
+%\newcommand{\qlendpt}[1]{L_{#1}^{\epsilon_\dpintvl, \delta_\dpintvl}}
+\newcommand{\payload}{R}
+\newcommand{\dummy}{D}
+\newcommand{\numupdates}{\lceil \frac{\winlen}{\dpintvl} \rceil}
+\newcommand{\varnumupdates}{N}
+
+\newcommand{\base}{{\bf Base}}
+\newcommand{\nsnoshape}{{\bf NS\textsubscript{M}}}
+\newcommand{\ns}{{\bf NS}}
+\newcommand{\nssim}{{\bf NS\textsubscript{S}}}
+\newcommand{\constshape}{{\bf CR}}
+\newcommand{\pacer}{{\bf Pacer}}
+
+\newcommand{\parasum}[1]{\smallskip\noindent\hl{#1}}
+
+%\newcommand{\todo}[1]{\textcolor{red} {#1}}
+%\newcommand{\shepherd}[1]{\textcolor{orange} {#1}}
+%\newcommand{\update}[1]{\textcolor{blue} {#1}}
+%\newcommand{\remove}[1]{\textcolor{red} {\sout{#1}}}
+%\newcommand{\final}[1]{\textcolor{blue} {#1}}
+\newcommand{\citeme}[1]{\textcolor{red} {[{\bf #1}]}}
+\newcommand{\am}[1]{\textcolor{cyan}{\bf AM: #1}}
+%\newcommand{\mis}[1]{\textcolor{purple}{\bf MIS: #1}}
+\newcommand{\ml}[1]{\textcolor{orange}{\bf ML: #1}}
+\newcommand{\as}[1]{\textcolor{forestgreen}{\bf AS: #1}}
+%\newcommand{\strike}[1]{\sout{#1}}
+
+\newcommand{\todo}[1]{{#1}}
+\newcommand{\update}[1]{{#1}}
+%\newcommand{\final}[1]{{#1}}
+%\newcommand{\citeme}[1]{\cite{#1}}
+%\newcommand{\am}[1]{#1}
+\newcommand{\mis}[1]{{#1}}
+% \newcommand{\ml}[1]{{#1}}
+% \newcommand{\as}[1]{{#1}}
+%\newcommand{\strike}[1]{}
+
+% Remove way underline in latexdiff
+\providecommand{\DIFadd}[1]{{\protect\color{blue}#1}}
+
+%\usepackage{fancyhdr}
+%\fancypagestyle{footnohead} {
+%    \fancyhead{}
+%    \fancyfoot{}
+%    \fancyfoot[C]{\thepage}
+%    \renewcommand{\headrulewidth}{0mm}
+%}
+
+% for adjusting text tilde height
+\usepackage{textcomp}
+
+\hyphenation{time-stamps}
+
+%\renewcommand\footnotetextcopyrightpermission[1]{}
+%\pagestyle{plain}
+%\thispagestyle{empty}
+
+%\settopmatter{printfolios=true,printacmref=false}
+%\pdfsuppresswarningpagegroup=1
+
+\begin{document}
+
+\title{\Large \bf \sys: A Differentially Private Network Side-Channel Mitigation
+System}
+\author{Amir Sabzi, Rut Vora, Swati Goswami, Margo Seltzer, Mathias L\'ecuyer,
+Aastha Mehta\\
+    The University of British Columbia
+}
+%\author{Paper \# 168
+%\todo{Page limit: 12 pages excluding bibliography and appendix}\\
+%(Confidential, please do not circulate!)
+%}
+\date{} \thispagestyle{empty}
+
+\maketitle
+
+\begin{abstract}
+\input{abstract}
+\end{abstract}
+
+\input{intro}
+\input{background}
+%\input{src/overview}
+%\input{src/dp}
+\input{dp2}
+%\input{src/design}
+\input{design2}
+%\input{src/design_new}
+%\input{src/implementation}
+\input{security}
+\input{evaluation}
+%\input{src/discussion}
+\input{related}
+\input{conclusion}
+
+\input{acks}
+
+%\newpage
+{
+\footnotesize
+\bibliographystyle{abbrv}
+\bibliography{paper}
+}
+%\bibliographystyle{abbrv}
+
+
+\appendix
+
+\input{attack}
+\input{eval-extended}
+\input{overheads_without_max}
+\input{appendix2}
+\input{tamaraw}
+
+\end{document}
+

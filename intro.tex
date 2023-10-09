@@ -1,0 +1,278 @@
+\section{Introduction}
+\label{sec:intro}
+
+%The rising demands of remote work and multi-site connectivity have led to an
+%increase in usage of VPN services. While VPNs encrypt network traffic to protect
+%against data breaches, they are insufficient to protect against {\em {\nsca}
+%attacks}. In a {\nsca} attack, an {\em adversary} infers a {\em victim's}
+%secrets through observations of one or more features of network traffic, {\eg}
+%packet sizes, timings, and direction, which constitute the victim's {\em traffic
+%shape}. Prior work has shown that traffic shape can reveal rich information
+%about a user's network activity; it can reveal VoIP chat content~\cite{voip},
+%video streams~\cite{schuster2017beautyburst}, and even users' medical or financial secrets
+%from traffic on websites~\cite{webreality}.
+With the proliferation of TLS and VPN, traffic encryption has become the de
+facto standard for securing data in transit in Internet applications. Traffic
+can be encrypted at various layers, such as HTTPS, QUIC, and IPSec.
+%which can protect the traffic content from network adversaries.
+%
+While these protocols prevent {\em direct} data breaches on the Internet, they
+cannot~prevent leaks through {\em indirect} observations
+of the encrypted traffic.
+
+Indeed, encryption cannot conceal the shape of an
+application’s traffic, \ie the sizes, timing, and number of packets sent
+and received by an application. In many applications, these parameters strongly
+correlate with sensitive information. For instance, %prior work has shown that
+traffic shape can reveal video
+streams \cite{schuster2017beautyburst}, website visits
+\cite{wang2014supersequence, bhat2019varcnn},
+the content of VoIP conversations \cite{white2011phonotactic}, and
+even users’ medical and financial secrets \cite{chen2010reality}.
+
+In such {\em network side-channel leaks}, an adversary (\eg a malicious or
+a compromised ISP) observes the shape of an application's traffic as it
+passes through a link under its control and
+infers the application's sensitive data from this shape.
+
+%While an adversary may need to overcome practical challenges in the traffic
+%measurements, such as noise due to congestion or path variations, recent ML
+%advancements have greatly improved the ability to make inferences even from
+%noisy data \cite{schuster2017beautyburst, bhat2019varcnn, hayes2016kfp,
+%sirinam2018df}. In fact, we also present a new classifier based on temporal
+%convolution networks (TCN) \cite{bai2018tcn}, which improves the state of the
+%art in attack classifiers \cite{schuster2017beautyburst} and can infer video
+%streams even from short bursts of noisy measurements over the Internet
+%\todo{(Section X)}.
+
+%Obfuscation techniques that rely on adding ad hoc noise in an adversary's
+%measurements \cite{shan2021dolos, rahman2020mockingbird, nasr2021defeating} do not
+%provide comprehensive protection against {\nsca} attacks.
+%Since an adversary could observe the victim’s traffic entirely passively,
+%detection of such attacks can be extremely difficult.
+Obfuscation techniques, which add ad hoc noise~\cite{luo2011httpos}
+or adversarial noise \cite{shan2021dolos, nasr2021defeating, rahman2020mockingbird,
+hou2020wf, abusnaina2020dfd, gong2022surakav}
+in an application's network traces, do not provide comprehensive protection
+against {\nsca} attacks \cite{zhang2019statistical}.
+In fact, recent advances in machine learning (ML)
+have greatly improved the ability to filter
+out noise due to congestion or path variations and infer secrets from noisy data
+\cite{schuster2017beautyburst, bhat2019varcnn, hayes2016kfp, sirinam2018df}. For
+instance, our own novel classifier based on Temporal Convolution
+Networks (TCN) \cite{bai2018tcn} can infer video streams even from short bursts
+of noisy
+measurements over the Internet (see \S\ref{sec:background}~for details).
+%Alternatively, the victim application could evade an adversary by
+Alternatively, a sensitive application could try to improve side-channel
+resilience by splitting traffic over multiple network paths
+\cite{cadena2020trafficsliver, wang2022leveraging} or by
+using dedicated physical links that are not controlled by the adversary.
+However, such solutions are inadequate against a powerful adversary
+that can monitor a large fraction of the Internet
+\cite{beckerle2022splitting} and may incur prohibitive network
+administration costs for small users on the Internet.
+%However, such isolation needs to be guaranteed end-to-end in the victim’s path,
+%which is expensive and impractical, particularly for small tenants on the
+%Internet and in the presence of a potent adversary, such as an ISP.
+
+%Obfuscation techniques rely on adding ad-hoc noise in the form of chaff or
+%random delays \cite{shan2021dolos, rahman2020mockingbird, nasr2021defeating} into an adversary’s
+%observations of a victim’s traffic.
+%Such solutions do not provide comprehensive protection against a determined
+%adversary who infers secrets even from noisy observations.
+
+In contrast, a principled and practical approach to mitigating network
+side-channel leaks is {\em traffic shaping}. It involves modifying the victim’s
+packet sizes and timing to make the resultant shape independent of secrets, so
+that an adversary cannot infer the secrets despite observing the (shaped)
+traffic.
+
+Constant shaping involves sending fixed-sized packets at a constant rate, which
+is secure but incurs non-trivial bandwidth and/or latency overhead for
+applications with variable or bursty workloads \cite{saponas2007devices}.
+Variable shaping strategies attempt to adapt traffic shapes to reduce the
+overhead
+at the cost of some privacy. However, the state-of-the-art (SOTA) variable
+shaping strategies rely on ad hoc heuristics that yield weak privacy guarantees
+\cite{wang2014supersequence, nithyanand2014glove, wang2017walkietalkie} or
+unbounded privacy leaks \cite{gong2020zero, cai2014csbuflo,
+lu2018dynaflow, juarez2016wtfpad, cai2014tamaraw}.
+%Moreover, some strategies
+Some techniques provide strong guarantees but
+require extensive a priori profiling of an applications' traffic to compute
+shapes
+%and do not adapt to real-time traffic conditions, thus incurring unnecessary
+%overhead
+\cite{mehta2022pacer, zhang2019statistical}.
+
+%However, na\"ive traffic shaping strategies can be extremely inefficient in
+%practice or not secure at times.
+%
+%
+%Constant shaping involves sending fixed-sized packets at a constant rate, which
+%is secure but incurs non-trivial bandwidth and/or latency overhead for
+%applications with variable or bursty workloads \cite{saponas2007devices}.
+%Variable shaping strategies attempt to adapt traffic shapes to reduce overheads
+%at the cost of some privacy.
+%These strategies can be categorized into two types: static strategies, which
+%cluster traffic and precompute shapes for each cluster offline
+%\cite{wang2014supersequence, nithyanand2014glove, wang2017walkietalkie,
+%gong2020zero, mehta2022pacer}, and dynamic strategies, which decide the traffic
+%shape at runtime based on the incident workload (\eg rounding lengths of
+%individual data transfers to the next power of two \cite{cai2014csbuflo,
+%lu2018dynaflow, juarez2016wtfpad, cai2014tamaraw}).
+%The static strategies require extensive a priori profiling of the applications
+%and are, therefore, harder to adapt to real-time traffic conditions, while the
+%dynamic techniques known till date do not guarantee privacy for all data
+%transfers.
+%
+In addition to a shaping strategy, network side-channel mitigation also
+requires a robust implementation of packet padding and transmit scheduling.
+Many solutions attempt to protect traffic by controlling shaping from only one
+end of a communication (\ie either a client or a server) and provide only
+best-effort protection
+%restricted to single applications
+\cite{luo2011httpos, smith2022qcsd, cherubin2017llama}. Other solutions rely on
+trusting third-party mediators (\eg Tor bridges), which implement shaping
+between the clients and mediators and between the servers and mediators
+\cite{mohajeri2012skypemorph, winter2013scramblesuit}.
+%or do not provide end-to-end security \cite{beams2021ifs}.
+In Pacer \cite{mehta2022pacer}, both application endpoints integrate a
+shaping system to comprehensively mitigate network side channels. However, Pacer
+encumbers application end hosts with non-trivial changes in the network
+stack to implement shaping, thus deterring adoption.
+%Thus, most of these systems suffer from practical challenges.
+%\am{needs work.}
+
+In this work, we address two main questions. First, is there a variable traffic
+shaping strategy that provides quantifiable and tunable privacy guarantees at
+runtime without requiring extensive pre-profiling of application traffic?
+Second, can traffic shaping be provided as a generic, portable, and efficient
+solution that can be integrated in different network settings and can support
+diverse applications?
+
+We present {\sys}, a network side-channel mitigation system that answers both
+questions in the affirmative.
+%First, {\sys} provides a differential privacy (DP) based traffic shaping
+%strategy, which is application-agnostic by default, but can adapt privacy
+%guarantees and resulting overheads at runtime based on the prevailing workload
+%and congestion conditions.
+First, {\sys} relies on a differential privacy (DP) based traffic shaping
+strategy, which provides quantifiable and tunable privacy guarantees.
+{\sys} specifies the privacy parameters for a configurable window of
+transmission. Moreover, it can configure the parameters independently for each
+direction of traffic on a communication link. The DP guarantees can be composed
+based on these parameters to achieve bounded privacy leaks for arbitrary
+bidirectional traffic.
+Overall, applications can tune the shaping based only on the privacy guarantees
+they desire and the overheads they can afford, without the need for
+profiling their traffic.
+%{\sys}'s shaping strategy is application-agnostic by default, but can also adapt
+%the privacy guarantees and the resulting overheads at runtime based on
+%prevailing workload and congestion conditions.
+%{\sys}'s theoretical DP guarantees are far stronger than those required
+%for SOTA attacks, which can be defeated with even small amounts of DP noise in
+%the traffic.
+While strong privacy guarantees require DP parameters that incur
+large overheads, in practice, {\sys} can defeat SOTA attacks with even small
+amounts of DP noise, thus incurring low overheads.
+%Thus,
+%%Moreover, while {\sys}'s shaping strategy is application-agnostic by default,
+%%\todo{that subsume the privacy guarantees of prior work \cite{cai2014tamaraw}}.
+%%\ml{what is the prior work ref related to?}\ml{do we want to say quantifyable?}
+%%Thus, while {\sys}'s shaping strategy is application-agnostic by default,
+%applications can optionally tune the shaping for the desired privacy
+%guarantees and the affordable overheads.
+%\am{confusing; reword}
+%\update{Our shaping provides strong mathematical guarantees for privacy, which
+%subsume the privacy guarantees of prior work.}
+
+Secondly, we present a traffic shaping tunnel with a modular endpoint design
+that can conceptually be integrated with any network stack and within any node.
+The tunnel implements padding and transmit scheduling of packets while
+adhering to the DP guarantees {\em by design}.
+%Furthermore, {\sys} ensures that packet sizes and timing are not affected by
+%internal side channels, thus securely eliminating all network side-channel leaks
+%{\em by design}.
+{By placing the tunnel endpoint in a middlebox at the edge of the
+private network, {\sys} can simultaneously protect
+the traffic of multiple applications. Moreover, the middlebox can amortize the
+shaping overheads among multiple flows without compromising the privacy for
+individual flows.
+}
+
+Together, the DP shaping strategy and {\sys}'s tunnel provide effective {\nsca}
+mitigation for diverse applications, such as video streaming and web services,
+with modest overheads.
+To the best of our knowledge, {\sys} is the first system to provide dynamic
+traffic shaping with quantifiable and tunable privacy guarantees based on DP.
+%Together with the tunnel, {\sys} provide effective {\nsca} mitigation for
+%diverse applications, such as video streaming and web services, with modest
+%overheads.
+
+%Unlike prior work, {\sys} can shape the traffic of
+%applications without requiring any profiling of their network traces.
+%Furthermore, we present a middlebox-based implementation of {\sys} that can
+%support shape traffic of multiple clients and servers without requiring
+%modifications on individual end hosts.
+%\todo{We believe that {\sys} can eliminate the arms race in {\nsca} attacks and
+%defenses and can provide a portable and configurable framework for deploying
+%mitigations for applications with diverse traffic characteristics and in
+%different settings.}
+%\todo{TODO: quantifiable implies being able to tune the tradeoff}
+
+\textbf{Contributions.}
+(i)
+%We demonstrate the viability of network side-channel attacks on video
+%streams over the Internet using a SOTA CNN-based classifier, namely the ``Beauty
+%and the Burst'' (BB) classifier
+%\cite{schuster2017beautyburst}.
+We design a new attack classifier based on a
+Temporal Convolution Network (TCN) \cite{bai2018tcn}
+%that is robust than the BB classifier
+and demonstrate its ability to infer
+videos streams from traffic shapes under noisy network traffic measurements in
+the Internet (\S\ref{sec:background}).
+(ii) We model network side-channel mitigations as a differential privacy problem
+and provide a traffic shaping strategy that offers
+($\epsilon$,$\delta$)-differential privacy guarantees (\S\ref{sec:dp}).
+%(ii) We present a proxy-style architecture for shaping an application's traffic
+%(iii) We design a traffic shaping tunnel that intercepts and shapes application
+%traffic and present a security analysis of the design (\S\ref{sec:design}).
+%(iv) We design and develop an instance of the tunnel using QUIC-based
+%middleboxes, which supports shaping along with congestion control, flow
+%aggregation and prioritization (\S\ref{sec:implementation}).
+(iii) We design a QUIC-based traffic shaping tunnel and present a
+middlebox-based implementation of the tunnel, which supports traffic shaping
+while adhering to DP guarantees (\S\ref{sec:design}).
+%(iii) Based on the architecture, we present the design and implementation of a
+%traffic shaping system using QUIC-based middleboxes and an analysis of the
+%security of the design and the implementation (\S\ref{sec:implementation}).
+%(iv) We develop a new attack classifier based on a temporal convolution network
+%(TCN) \cite{bai2018tcn} that is more robust to noises in network traffic measurements
+%compared to the state-of-the-art CNN-based classifier
+%\ml{cite. Also a TCN is a kind of CNN, so this sounds a bit weird. We could
+%remove CNN, or focus on the core differences (finer grain inputs?)}
+%and we demonstrate that
+%{\sys}'s shaping of video traffic makes it secure against even the stronger
+%classifier (\S\ref{sec:eval}).
+(iv) We demonstrate {\sys}'s efficacy in defeating a SOTA classifier
+\cite{schuster2017beautyburst} and our new TCN classifier.
+%(\S\ref{sec:eval}).
+%(v)
+We empirically evaluate the tradeoffs between {\sys}'s privacy guarantees
+and performance overheads while mitigating {\nsca} leaks in two classes of
+applications that have already been used in prior work, namely video streaming
+and web service (\S\ref{sec:eval}).
+%\todo{Result overview.}
+(vi) We present a formal proof of {\sys}'s differential privacy
+guarantees~(\S\ref{appendix:dp}).
+%\todo{and demonstrate its superiority to the privacy guarantees of a SOTA
+%shaping strategy \cite{cai2014tamaraw} (\S\ref{appendix:tamaraw})}.
+%\am{to be revised.}
+%\ml{do we want to keep that last point? we claimed it's DP, so we have to have a
+%proof. The other I woudn't ref in intro if it's an appendix thing. I think we
+%should keep that pointer to where it's relevant in the core of the paper. Or if
+%it's so important that it's in the intro, it should be in the core of the
+%paper!}

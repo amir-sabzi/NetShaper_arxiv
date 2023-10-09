@@ -1,0 +1,652 @@
+\section{Background, Motivation, and Overview}
+\label{sec:background}
+
+%We first show network side-channel attacks that can leak the video stream based
+%on a combination of features, such as packet size, inter-packet timing, burst
+%length, burst interval, and direction. We then give a brief overview of QUIC and
+%differential privacy.
+
+\subsection{Network Side-Channel Attacks}
+\label{subsec:attack-bg}
+
+We start by explaining the workings of a network side-channel attack with an
+example application.
+Consider {\medvid}, a fictitious medical video service that offers videos on
+symptoms, treatment procedures, and post-operative care.
+%We demonstrate an example {\nsca} attack.
+The goal of an adversary is to infer the videos streamed by users visiting the
+service.
+%The goal is to infer from the traffic shape the videos being streamed by users.
+ISPs can aggregate such information to build per-user profiles and subsequently
+monetize them.
+Additionally, competitors might exploit {\nsc}s to acquire corporate intelligence
+without detection.
+
+The adversary performs the attack in two stages. First, the adversary requests
+each video from the medical service as a client and collects traces of the
+bidirectional network traffic generated while streaming each video. The
+adversary may collect multiple traces for each video stream to account for
+network variations in the traffic. The adversary then builds a classifier over
+the captured traces to identify the video streams.
+Prior work has used several features for classification, such as packet sizes,
+inter-packet timing, total bytes transferred in a burst of packets, the burst
+duration and inter-burst interval, and the direction of packets or bursts
+\cite{schuster2017beautyburst}.
+
+We reproduce the Beauty and the Burst (BB) classifier
+\cite{schuster2017beautyburst}, a state-of-the-art CNN
+classifier for classifying video streams from network traces.
+Furthermore, we present a new TCN classifier \cite{bai2018tcn}, which is an
+improvement over the BB classifier.
+We describe the classifiers in \S\ref{appendix:tcn}.
+Here, we evaluate~the efficacy of the two classifiers for a network side-channel
+attack.
+
+We set up a video service and a video client as two Amazon AWS VMs placed in
+Oregon and Montreal, respectively. The video server hosts a dataset of
+\update{100 YouTube videos} at 720p resolution with MPEG-DASH encoding
+\cite{mpeg-dash}. The client streams the first \update{5 min} of each video
+\update{over HTTPS} and collects the resulting network packet traces using
+tcpdump.
+We stream each video \update{100} times, thus collecting a total of
+\update{10,000} traces.
+%\update{We transform each packet trace into a sequence of burst
+%sizes transmitted within 1s windows~and normalize the sequence by dividing
+%each burst size by the total size of all bursts.}
+%\ml{is the traffic encrypted here? If so it'd be good to point out to tie back
+%to the motivation.}
+
+%We reproduce Beauty and the Burst (BB) \cite{schuster2017beautyburst}, a
+%SOTA CNN classifier.
+%
+%A key limitation of many attacks is that they are often trained on traces
+%collected under lab settings with stable network conditions. Thus, even small
+%perturbations may affect the performance of classifiers in real-world settings.
+%
+%We also present a new TCN classifier
+%\cite{bai2018tcn}, which is robust to noisy measurements
+%over the Internet.
+The classifiers' goal is to predict the video from a network trace.
+%The classifiers' goal is to predict the video title from \remove{a network trace}\update{the burst sequence of the video}.
+%The classifiers' goal is to predict if a
+%network trace corresponds to one of the videos in the dataset.
+%
+For each classifier, we transform each packet trace into a sequence of burst
+sizes transmitted within 1s windows~and normalize the sequence by dividing
+each burst size by the total size of all bursts.
+%\update{we assume that the attacker uses 80\% of burst sequences to train the
+%classifier, and 20\% of traces to test it.}
+%
+We evaluate the performance of both classifiers with three datasets: a small
+dataset consisting of 20 videos with their 100 traces each (\ie total
+2000 traces), a medium
+dataset with 40 videos (4000 traces),  and a large dataset comprising
+all \update{100 videos} (\update{10000} traces).
+We train the classifiers for 1000 epochs with an 80-20 train-test split.
+%We analyze the performance of both classifiers for two datasets. We use
+%\update{40} videos with their 4000 traces as a {\tt small} dataset and
+%all the 100 videos (10,000 traces) as a {\tt large} dataset.
+%We train the classifiers for \update{1000} epochs with 80-20 train-test split.
+%We train the classifiers for \update{1000} epochs with 80\% of the traces and
+%evaluate their performance on the remaining 20\%.
+%
+%\update{Compared to BB, TCN is a more complex model with residual layers.}
+BB's classification accuracy, recall, and precision with the small dataset are
+0.85,~0.85, and 0.78, respectively, which drop to
+0.61,~0.63, and 0.49, respectively, with the medium dataset, and further
+drop to 0.01 each for the large dataset.~TCN's accuracy, recall, and precision
+are above 0.99 for all datasets.~TCN performs better than BB because it
+is a complex model with residual layers and, hence, is robust to noise in the
+traces.
+%\update{0.995, 0.99, and 0.99}, respectively.
+%
+%\footnote{BB's performance is similar to that reported in the
+%original paper when classifying a very small dataset of 18 videos, but drops
+%with larger datasets.}
+%With the large dataset, BB's accuracy drops to \update{0.01} (equivalent to
+%random guesses).
+%%even after training for \update{6 hours}.
+%However, TCN's accuracy, recall, and precision remain above \update{0.99} each.
+%\update{0.99, 0.997, 0.996} each.
+
+%
+%We first train both classifiers on \todo{20} videos of max \todo{5 min}
+%duration. We stream each video \todo{100} times, thus collecting a total of
+%\todo{2000} traces. We transform the traces into a sequence of total burst
+%length within 1s windows for both the classifiers and use the traces with a
+%\todo{80/20} train/test split.
+%
+%The BB classifier's accuracy, recall, and precision are 0.92, 0.92, and 0.88,
+%respectively. The TCN classifier's accuracy, recall, and precision are 0.995,
+%0.995, and 0.995, respectively.
+%%
+%With an even larger dataset of \todo{100} videos, BB's accuracy drops to about
+%0.63 even after training for \todo{10 hours}. However, TCN's accuracy, recall,
+%and precision remain at 0.995 each.
+%With an even larger dataset of \todo{100} videos, BB and TCN require training
+%for \todo{10 hours} and \todo{18min} to achieve accuracy, recall, and precision
+%of \todo{>0.9} each.
+%\todo{Fig []} shows the performance of the two classifiers. TCN performs even
+%better than BB on video streams and is robust to network noise.
+
+Similarly, advanced ML classifiers are capable of identifying web traffic
+\cite{bhat2019varcnn, sirinam2018df}.
+%These experiments corroborate prior results on the efficacy of neural networks
+%in leaking sensitive information from network traffic shapes
+%\cite{schuster2017beautyburst, bhat2019varcnn, sirinam2018df}.
+%
+In general, classifiers will continue to evolve,
+increasing the adversary's capabilities to make inferences from noisy
+measurements.
+Hence, we need principled mitigations that address
+current SOTA attacks and achieve quantifiable
+leakage, which can be configured based on privacy
+requirements and overhead tolerance.
+
+%\subsection{Design goals}
+%\label{subsec:goals}
+\subsection{Key Ideas}
+\label{subsec:key-ideas}
+
+A secure and practical {\nsca} mitigation system must satisfy the following
+design goals:
+{\bf G1.} Mitigate leaks through all aspects of the shape of transmitted traffic,
+{\bf G2.} Provide quantifiable and tunable privacy guarantees for the
+communication parties,
+{\bf G3.} Minimize overheads incurred while guaranteeing privacy,
+{\bf G4.} Support a broad class of applications, and
+{\bf G5.} Require minimal changes to applications.
+%{\bf G5.} Enable tuning between privacy guarantees and overheads with minimal
+%changes modifications to the applications. {\as{Maybe we can combine G5 and G3}}
+
+{\sys}'s shaping prevents leaks of the traffic content through sizes and
+timing of packets transmitted along each direction between application nodes
+(G1).
+%\todo{along all communication links between application nodes} (G1).
+In addition, {\sys} relies on the following three key ideas.
+%\todo{It can also hide the precise times of network activity.} (G1).
+%
+%We present the key ideas of {\sys}'s shaping that help achieve the remaining
+%goals. We then present {\sys}'s threat model.
+%We present the key ideas of our solution that help achieve the above goals and
+%the threat model and assumptions we are operating on.
+%We start by listing the key goals for designing a {\nsca} mitigation system. We
+%then describe the threat model and assumptions we are operating on, and finally
+%the key ideas of our solution.
+
+\textbf{Differentially private shaping.}
+%As discussed in \S\ref{sec:intro},
+Unlike constant shaping, variable shaping can adapt traffic shape, potentially
+based on runtime workload patterns, and thus significantly reduce shaping
+overheads.
+%Dynamic shaping can help to reduce costs of mitigating network side channels at
+%the cost of some privacy leak.
+{Unfortunately, existing variable shaping techniques either have unbounded
+privacy leaks, offer only weak privacy guarantees, or require extensive
+profiling of an application's network traces.
+%Moreover, some of these techniques require extensive profiling of an
+%application's network traffic traces.
+}
+%\am{Check recent techniques.} \am{How can we compare privacy
+%leakage of k-anonymity vs differential privacy?}{\as{I think k-anonymity has
+%$\varepsilon$ of infinite as the output probability for any two trace from two
+%different groups of anonymity is not bounded.}}
+%
+%{\sys} instead relies on a dynamic shaping technique that provides
+%%allows variations in traffic shapes while providing
+%%\todo
+%{quantifiable privacy leaks with tunable bounds} and without requiring
+%extensive pre-profiling of application traffic.
+%%\todo{{\sys}'s shaping hides the time of initiation and termination of
+%%transmissions}, as well as the content of the transmissions (G1).
+%Specifically, {\sys} provides differential privacy guarantees in its shaping
+%(G2).
+%Specifically, it generates differentially-private burst length for transmission
+%in periodic intervals.
+{\sys}'s novel differential privacy (DP) based shaping strategy provides
+quantifiable and tunable bounds on privacy leaks, without relying on profiling
+of application traffic (G2).
+{\sys} shapes an application's traffic in periodic, fixed-length {\em
+shaping intervals} and provides DP in the length of the application byte stream
+(burst) accumulated within each interval.
+The DP guarantees compose over a sequence of multiple intervals and, thus, for
+streams of arbitrary length (albeit with
+degraded guarantees).
+%; although, the guarantees degrade with increasing number of intervals
+%(\Cref{prop:dp})
+%\am{{\sys} transforms an application's byte stream into a sequence of bursts
+%accumulated in periodic, fixed-length intervals; it subsequently applies DP
+%noise to burst lengths within each interval and outputs a burst consisting of
+%payload and dummy bytes that amount to the noised burst length computed for the
+%interval.}
+%\todo{The DP guarantees are determined on fixed-length burst intervals and
+%composed across consecutive intervals to quantify the overall privacy
+%guarantees for an application.}
+%\todo{The DP guarantees are enforced on application streams in sliding windows
+%of configurable length.}
+%\todo{The DP guarantees are enforced~on streams at the granularity of a sliding
+%{\em privacy window} of configurable length, \am{which covers one or more
+%shaping intervals}.} Streams longer than this window length retain (weaker) DP
+%guarantees through composition.
+%over multiple windows.
+%\mis{This sentence confuses me; we don't determine the guarantees per
+%burst, we change the amount of data sent to retain the same guarantee,
+%don't we?}
+%\ml{[how about replacing the todo part with:] The DP guarantees are enforced on
+%a sliding window of configurable length. Streams longer than this window length
+%retain (weaker) DP guarantees through composition over multiple windows.}
+
+%\am{\ml{@Mathias: verify if the above English explanation of the DP guarantees
+        %is accurate.}}
+%
+%{\sys}'s shaping incurs lower overheads compared to constant shaping as well as
+%other prior techniques (G3).
+%We discuss the shaping technique in \S\ref{sec:dp} and evaluate its performance
+%in \S\ref{sec:eval}.
+
+\textbf{Shaping in a middlebox.}
+%\S\ref{fig:minesvpn-overview} provides an overview of {\sys}'s architecture.
+{\sys} uses a tunnel abstraction to implement traffic shaping.
+The tunnel shapes application traffic such that an
+adversary observing the tunnel traffic cannot infer application secrets.
+In principle, a tunnel endpoint could be integrated with the application host
+%node hosting an application
+(\eg in a VM isolated from the end-host application) or in a
+separate node through which the application's traffic passes.
+{\sys} relies on the second approach and implements the tunnel endpoint as a
+middlebox, which could be integrated with an existing network element, such as a
+router, a VPN gateway, or a firewall.
+%(see \S\ref{sec:implementation} for more details).
+The middlebox implementation enables securing multiple applications without
+requiring modifications on individual end hosts (G4).
+Furthermore, it allows pooling multiple flows with the same privacy requirements
+in the same tunnel, which helps to amortize the per-flow overhead (G3).
+%We elaborate on the {\sys}'s implementation in \S\ref{sec:implementation} and
+%evaluate the performance optimization in \S\ref{sec:eval}.
+%\ml{Here we need to emphasize that sharing a pipe is very good for privacy
+%guarantees (assuming we evaluate it? To me that's a core benefit of the
+%middlebox deisgn so it'd be really good to have it.) Maybe something like
+%``Importantly, our middlebox design enables pooling multiple clients through
+%the same protected tunnel, providing privacy guarantees to mulitiple
+%connections at a fixed overhead (\S\ref{sec:dp}).''}
+
+\textbf{Minimal modifications to end applications.}
+By default, {\sys} shapes all traffic through a tunnel with a fixed differential
+privacy guarantee.
+%\sout{, \ie with a single value of $\epsilon$ and $\delta$.}
+%\mis{Since we have not yet introduced DP, can we just drop the clause
+%about $\epsilon$ and $\delta$ since these have not been defined for
+%the reader?}
+%\ml{I think that's be better too, so I crossed it out :)}
+However, an application can explicitly specify different DP parameters to adapt
+the privacy guarantee enforced for its traffic,
+%\sout{($\epsilon$ and $\delta$)},
+as well as bandwidth and latency constraints and any prioritization preferences
+on a per-flow basis.
+%to its local middlebox.
+This requires only a small modification in the
+application; it must transmit a shaping configuration message
+to the middlebox.
+Thus, {\sys} offers a balance between being fully
+application-agnostic and optimizing for privacy or overhead with minimal
+support from applications (G2, G5).
+%\am{We need to know how {\sys} should use DP parameters for 5s intervals or for
+%sensitivity of 2MB.}
+
+\subsection{Threat Model}
+\label{subsec:threat-model}
+%{\sys}'s goal is to protect an application's secrets from being leaked to a
+%network adversary.
+%We assume that the communicating nodes are inside a trusted private network,
+%\eg behind a VPN gateway node, which an adversary cannot compromise.
+%\todo{We assume that all the application endpoints are non-malicious and do not
+%explicitly leak the secrets themselves. The secrets could be leaked only through
+%side channels. A service serving both privacy-sensitive and privacy-insensitive
+%clients is partitioned into two instances, with each instance dedicated to
+%serving clients with similar privacy requirements. For the privacy-sensitive
+%clients, we assume the corresponding service endpoint agrees to serve the
+%clients according to their privacy requirements.}
+
+%{\sys}’s goal is to protect an application’s secrets from being leaked to a
+%network adversary.
+{\sys}'s goal is to hide the content of an application's network traffic.
+Hiding the type of traffic \cite{shapira2019flowpic}, the
+communication protocol \cite{winter2013scramblesuit}, or the
+application identity \cite{dyer2012peekaboo, danezis2009https} are
+non-goals, although {\sys} can adapt its shaping strategy to address these goals.
+%\todo{as well as the time of initiation and the duration of the network
+%activity}.
+%\am{Despite the ``always-on'' tunnels, we still have coarse-grained leaks of
+%start times of flows when a flow selects different DP parameters than default.
+%If we further imagine starting tunnels just before transmissions, such as for a
+%multi-hop scenario, we should not talk about hiding initiation times.}
+The applications are non-malicious and do not leak their own secrets.
+
+We assume that the application endpoints are inside separate trusted
+private networks (\eg each node is behind a VPN gateway node) and the adversary
+cannot infiltrate the private network, or the clients and servers within it.
+(Thus, we exclude covert attacks~\cite{zhang2011predinteractive} and
+colocation-based~attacks~\cite{schuster2017beautyburst,mehta2022pacer}).
+The adversary controls network links in the public Internet (\eg ISPs) and can
+record, measure, and tamper with the victim application's traffic as it
+traverses the links under the adversary's control.
+The adversary can precisely record the traffic shape---the sizes, timing,
+and direction of packets---between the {gateway nodes}.
+In particular, it may have access to observations of arbitrary known
+streams to train its attack.
+%\todo{communication graph}.
+It may also have knowledge about {\sys}, including its
+shaping strategy and privacy configurations.
+%Furthermore, the adversary can drop, replay, or inject packets into the victim's
+%traffic.
+%\ml{I feel like we should also say something like: ``The adversary has access
+%to unlimited chosen-traces traffic shape recordings. That is, the attacker can
+%play known steams over the tunnel and record the traffic shape.'' or something,
+%I don't know how to phrase it. I think it has a name in crypto when the
+%adversary can get cyphers of known texts, but I can't find it... maybe
+%chosen-plaintext attack?}
+%\am{I think this is incorrect and contradicts our assumption that the adversary
+%cannot infiltrate the system. I added the last sentence in this section; please
+%check and edit for precision.}
+%However, it cannot break standard cryptography, cannot compromise the victim's
+%VPN, and cannot impersonate its clients or servers to directly interact with the
+%victim (thus, no covert attacks).
+
+%{\sys} does not protect the type of traffic \citeme{flowpic}, identity of the
+%application \cite{dyer2012peekaboo, danezis2009https, hintz2002}, or the
+%communication protocol \cite{dyer2013protocol, wright2006inferring}, although it
+%can adjust the privacy parameters of its shaping strategy to address these
+%goals.
+We do not consider threats due to observing the IP addresses of
+packets~\cite{hoang2021domain}, although {\sys} can hide IP addresses of
+applications behind a shared traffic shaping tunnel.
+%We also do not consider the threat where a victim accidentally installs a
+%malicious script in the browser, thus enabling an adversary to colocate with the
+%victim's application and observe its
+%traffic~\cite{schuster2017beautyburst,mehta2022pacer}.
+%This is a reasonable assumption, since a colocated adversary can exploit many
+%other direct or indirect channels for data leaks that will be far more efficient
+%than {\nsc}s~\cite{kocher2018spectre, yarom2014flushreload, liu2015llcpractical,
+%irazoqui2015ssa, vila2017loophole}.
+%\eg by renting a VM or by installing a malicious script from a malicious website
+%enticing the victim to accidentally install malicious scripts from a malicious
+%website.
+%\todo{TODO: how do we handle victim accidentally visiting malicious websites and
+%installing malicious javascript, etc. on its device? In other words, how do
+%we
+%completely rule out colocated adversary?}
+
+%\todo{TODO: Describe the assumptions on adversary knowledge or capability w.r.t.
+    %differential privacy.}
+
+{\sys} does not address leaks of one application's sensitive data through the
+traffic shape of colocated benign applications.
+%transmitting only non-sensitive traffic.
+Such leaks can arise, for instance, due to microarchitectural interference among
+applications colocated on a host or among their flows if they pass through
+shared links.
+End hosts could implement orthogonal mitigations against colocated
+applications \cite{mehta2022pacer,
+%page05partitionedcache,
+shi2011limiting,
+%kim2012stealthmem,
+varadarajan2014scheduler, braun2015robust}
+and combine
+{\sys}'s shaping with TDMA scheduling on network
+links~\cite{beams2021ifs, vattikonda2012tdma}.
+%{\sys} assumes that privacy-sensitive and privacy-insensitive applications are
+%physically isolated and their flows use separate network paths.
+%\update{For instance, an application could be partitioned into separate
+%instances, each dedicated to serving clients with similar privacy requirements
+%(similar to performance-driven sharding).}
+%Furthermore, it assumes that a single application serving both privacy-sensitive
+%and privacy-insensitive clients is partitioned into separate instances, each
+%dedicated to serving clients with similar privacy requirements.
+%In practice, the physical partitioning assumption can be removed by having end
+
+%Mitigating such leaks requires physically isolating the applications and their
+%flows.
+%For example, an application serving both privacy-sensitive and
+%privacy-insensitive clients might be partitioned into two instances, with each
+%instance dedicated to serving clients with similar privacy requirements.
+%%For the privacy-sensitive clients, we assume the corresponding service instance
+%%agrees to serve the clients according to their privacy requirements.
+%Alternatively, end hosts could implement mitigations for various side channels
+%to support colocated applications \cite{mehta2022pacer, page05partitionedcache,
+%shi2011limiting, kim2012stealthmem, varadarajan2014scheduler, braun2015robust}.
+%%Similarly, to mitigate leaks among colocated flows at shared links,
+%Similarly, {\sys} assumes that the network paths of the sensitive and
+%non-sensitive flows are completely partitioned.
+%In practice, this limitation can be removed by combining {\sys}’s traffic
+%shaping with TDMA scheduling \cite{beams2021ifs, vattikonda2012tdma}.
+
+We present a middlebox-based {\sys} implementation
+that can be integrated with an organization's trusted gateway router.
+%We discuss implementation alternatives in \S\ref{sec:discussion}.
+%
+{\sys}'s trusted computing base (TCB) includes all components in the
+organization's private network and the middleboxes.
+%We assume that the middleboxes do not directly leak application secrets to the
+%adversary.
+Bugs, vulnerabilities or side channels in the middleboxes that threaten traffic
+confidentiality could be mitigated using orthogonal
+techniques, such as software fault isolation~\cite{tan2017sfi}, resource
+partitioning \cite{liu2016catalyst}, and constant-time implementation techniques
+\cite{
+%coppens2009practical,
+%    zhang2011predinteractive,
+    almeida2016verifying}.
+%\update{{\sys} does not provide security through obscurity, and its shaping
+%strategy is not confidential.
+%In \Cref{subsec:DP-background}, we demonstrate that even with knowledge of the
+%shaping strategy, the adversary cannot uncover any secrets.}
+%In practice, bugs or vulnerabilities in the middleboxes could be eliminated
+%using standard techniques, such as software fault isolation~\cite{tan2017sfi}.
+%We assume the cryptographic libraries are side-channel
+%free~\cite{almeida2016verifying}.
+%%
+%{\sys} does not prevent leaks of applications' secrets via side channels, \eg
+%microarchitectural side channels, in its middleboxes.
+%%We discuss potential mitigations in \S\ref{subsec:impl-shaping-security}.
+
+Under these assumptions, {\sys} prevents leaks of application secrets
+%\todo{and the timing of network activity}
+through the sizes and timing of packets transmitted in
+either direction between the application~endpoints.
+%\todo{Under the DP mechanism, {\sys} protects the secrets even when the
+%adversary makes repeated observations of the shaped traffic.}
+%\todo{Under the DP mechanism, {\sys} protects the secrets even when the
+%adversary has access to observations of arbitrary known streams to train their
+%attack.}
+%\todo{Although anonymity is not the focus of our work, {\sys} hides the number
+    %and identity of the participants communicating between two sites.}
+
+%\update{Under these assumptions, {\sys} prevents leaks of application secrets
+%through the sizes of the network packets, the inter-packet intervals, the
+%time of initiation of a network activity, or the duration of network activity in
+%either direction of communication between the application endpoints.}
+
+\if 0
+\subsection{QUIC}
+\label{subsec:quic}
+QUIC~\cite{langley2017quic} is a transport protocol that enables structured and
+flow-controlled communication over UDP. Additionally, QUIC offers low-latency
+connection establishment, reliable in-order delivery of data, and network path
+migration.
+
+A QUIC connection is set up between an initiator and a receiver, which can
+transport one or more streams of data. A packet on a QUIC connection is
+identified by a connection ID and a packet number, and may
+carry variable length frames, each identified by a stream ID and an offset
+indicating the number of bytes transmitted on a stream until the frame.
+%A QUIC stream is identified by a stream ID and transmits data encoded as one or
+%more frames, which are further packaged into a single QUIC packet.
+
+A QUIC packet's payload and a part of its header are encrypted, except
+for the connection ID and some flags relevant to decode the packets. Thus, all
+data on a connection is protected against direct observation
+by an adversary.
+
+Of particular relevance are three types of frames in a QUIC packet: (i) STREAM
+frames, which carry the stream data, (ii) ACK frames, which acknowledge the
+received frames, and (iii) PADDING frames, which is a special type of frame that
+can be used to increase packet sizes and consume congestion window. However,
+PADDING frames do not produce acknowledgements to open congestion window, thus
+being distinguishable from other frames in a QUIC stream. Prior work has shown
+that QUIC PADDING frames are not sufficient to protect against traffic analysis
+attacks~\cite{siby2022yougetpadding}. Thus, a sound way to generate padding within
+QUIC is to open a separate stream with a special ID and generate STREAM frames
+with the necessary amount of padding bytes on that stream. We use this approach
+in our implementation (see \S\ref{sec:implementation}).
+%
+%three types of frames are particularly relevant while shaping traffic on a QUIC
+%stream: STREAM frame, ACK frame, and PADDING frame.
+%\todo{TODO: some more background.}
+\fi
+
+%\if 0
+\subsection{A Primer on Differential Privacy}
+\label{subsec:DP-background}
+%\as{Comments 4 and 5: Reviewers either specifically asked to have a background
+%section or changes that imply the need for a background section. Primier on DP
+%need to be before our threat model so we can use DP properties to elaborate on
+%our model for attacker (\eg the attacker with auxiliary information).}
+%We use Differential Privacy (DP) to quantify the privacy of our shaping
+%mechanism.
+
+{Finally, we provide a brief primer on DP, the steps
+involved in building a DP mechanism, and the key properties of DP that are
+relevant in the context of traffic shaping (\S\ref{sec:dp}).}
+
+Developed originally for databases, DP is a technique to provide aggregate
+results without revealing information about individual database
+records.
+%
+Formally, a randomized algorithm $\mathcal{M}$ is $(\varepsilon, \delta)$-DP
+%with respect to a distance metric $\rho$ over databases
+if, for all $\mathcal{R} \subseteq \textrm{Range}(\mathcal{M})$ and for all
+{\em neighboring} databases $d, d'$ that differ in only one element:
+%$\rho(d, d') \leq 1$, we have:
+\begin{align}
+\label{eq:dp}
+P[\mathcal{M}(d)\in \mathcal{R}] \leq e^{\varepsilon}~P[\mathcal{M}(d') \in
+\mathcal{R}] + \delta
+\end{align}
+%In other words, a change in a single database record changes the probability of
+%any output(s) of $\mathcal{M}$ by at most $e^\varepsilon$.
+The parameter $\varepsilon$ represents the {\em privacy loss} of algorithm
+$\mathcal{M}$, \ie given a
+%\todo{Specifically, a value of $x$ for $\varepsilon$ implies that, given a
+% result of $\mathcal{M}$, the probability of identifying whether the input
+% database is $d$ or $d'$ is $e^{\varepsilon}$.
+result of $\mathcal{M}$, the information gain for any adversary on learning
+whether the input database is $d$ or $d'$ is at most $e^{\varepsilon}$
+\cite{kasiviswanathan2014semantics}.
+The $\delta$ is the probability with which $\mathcal{M}$ fails to bound the
+privacy loss to $e^{\varepsilon}$.
+
+Building such a randomized DP algorithm $\mathcal{M}$ involves three
+main steps: (i) defining neighboring database states, (ii) defining a database
+query and determining the sensitivity of the query to changes in neighboring
+databases, and (iii) adding noise to the query.
+%Two databases $d$ and $d'$ are called neighboring databases if they differ in
+%only one element.
+Neighboring databases $d$ and $d'$, as mentioned above, are characterized by the
+{\em distance} between the databases, which quantifies the granularity at which
+the DP guarantee applies.
+%The difference between $d$ and $d'$ is called the {\em
+%distance} between the databases, which quantifies the granularity at which DP
+%guarantee applies.
+Traditionally, this distance is defined as the number of
+records that differ between $d$ and $d'$. However, DP also extends to other
+neighboring definitions and distance metrics used in specific settings
+\cite{chatzikokolakis2013broadening, lecuyer2019certified}.
+%which we leverage in \sys.
+
+Given a database query $q$, the sensitivity of the query $\Delta q$ is the max
+difference in the result achieved when the query is executed on the neighboring
+databases $d$ and $d'$. Intuitively, a larger $\Delta q$ implies higher
+probability of an adversary inferring from a result the database on which the
+query was executed, thus incurring higher privacy loss.
+%
+To mitigate this privacy loss, a DP mechanism therefore adds noise to
+the query result to hide the true result and the underlying database. Popular
+noise mechanisms are Laplace \cite[\S3.3]{dwork2014algorithmic} and Gaussian
+\cite{dong2022gaussian}.
+%\ml{people usually capitalize, I think because it's based on actual names from
+%people.}
+
+\if 0
+The difference between $d$ and $d'$ is called the {\em distance} between the
+databases.
+It quantifies the granularity at which the DP guarantee applies: given the
+result of $\mathcal{M}(d)$, an adversary cannot distinguish whether it was ran
+on $d$ or any neighboring database $d'$.
+%Enforcing this constraint provably prevents membership inference (learning that
+%a specific user contributed data to the database) and reconstruction attacks
+%(reconstructing a row of the database) \cite{wasserman2010statistical,
+    %kasiviswanathan2014semantics, dong2022gaussian}.
+%The \todo{strength of the privacy protection} is parameterized by two
+%parameters.
+%The $\delta$ is the failure probability of mechanism to attain the privacy loss
+%(set to an appropriately small number).}
+%\am{provide accurate intuition of $\varepsilon$ and $\delta$.}
+%For both parameters, smaller means more private.
+Traditionally, this distance is defined as the number of records that differ
+between $d$ and $d'$, and the DP guarantee is over any neighboring databases (at
+distance one).
+However, DP extends to other neighboring definitions based on distance metrics
+for use in specific settings \cite{chatzikokolakis2013broadening,
+lecuyer2019certified}, which we leverage in \sys.
+% The first step for making an algorithm DP is to formalize this neighboring
+%definition (\S\ref{subsec:infromation-bottleneck}).
+In {\sys} we also use a different distance, and hence neighboring, definition to
+define DP guarantees over dynamic traffic streams
+(\S\ref{subsec:building-blocks}).
+
+\ml{[Introducing the notion of sensitivity, which we need before we can detail]
+The most common DP mechanisms, which we use in {\sys}, make a computation DP by
+adding noise to the non-private result. This noise needs to be scaled to the
+{\em sensitivity} of the computation, which is the worst possible change to the
+result when running the mechanism on two neighboring databases $d$ and $d'$
+(details in \S\ref{subsec:building-blocks}).
+% The second and third steps of making an algorithm DP are to bound the
+% sensitivty of the computation, and add noise scaled to this sensitivity
+% (\S\ref{subsec:dp-queue-measurements}).
+}
+\fi
+
+%Our shaping mechanism relies on three fundamental properties of DP.
+DP provides three properties.
+As we will show in \S\ref{subsec:dp-queue-measurements}, these are also of
+relevance to {\sys}'s DP traffic shaping.
+First, DP is resilient to post-processing: given the result $r$ of any
+$(\varepsilon, \delta)$-DP mechanism $\mathcal{M}$, any function $f(r)$
+%$(\varepsilon, \delta)$-DP mechanism $r \sim \mathcal{M}$, any function $f(r)$
+of the result is also $(\varepsilon, \delta)$-DP.
+%\am{Do we need to say that the function must be independent of input data?}
+%\as{The only input that function receives is the result. I don't think we need
+%to mention the independence of function again.}
+As a result, any computation or decision made on a DP result is still DP with
+the same guarantees.
+Second, DP is closed under adaptive sequential {\em composition}: the combined
+result of two DP mechanisms $\mathcal{M}_1$ and $\mathcal{M}_2$ is also DP,
+though with higher losses ($\varepsilon$ and $\delta$).
+We use the R\'enyi-DP definition~\cite{mironov2017renyi} to achieve simple but
+strong composition results and subsequently convert the results
+back to the standard DP definition.
+%\am{$\leftarrow$ unclear statement.}
+%
+Third, DP is robust to auxiliary information: the guarantee from \Cref{eq:dp}
+holds regardless~of any side information known to an attacker.
+Therefore, the attacker's knowledge of the shaping mechanism does not affect its
+privacy guarantees.
+% \am{Can we provide some more explanation of this?}
+That is, an attacker knowing or controlling part of the database cannot extract
+more knowledge from a DP result than without this side information.
+
+%\am{Do we need to discuss the $w$-$event$ privacy of Kellaris et al. in the
+%background?}
+%\ml{I'd say no, but I dislike this paper so might be biased... I also think
+%that their def is different, so we can calrify that in relwork}
+%\fi

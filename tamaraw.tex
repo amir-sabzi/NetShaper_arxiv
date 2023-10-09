@@ -1,0 +1,146 @@
+\section{Comparison of {\sys} and Tamaraw}
+\label{appendix:tamaraw}
+%Prior work has proposed several shaping strategies, although many of them use ad
+%hoc heuristics for shaping various features of network traffic to mitigate
+%network side-channel leaks.
+%Among prior work on shaping strategies to mitigate network side channels,
+{\small
+Tamaraw \cite{cai2014tamaraw} provides a
+mathematical notion of privacy guarantee of a shaping strategy, called
+$\epsilon$-security.
+To disambiguate with {\sys}'s notion of
+$(\varepsilon, \delta)$-DP, we rename Tamaraw's $\epsilon$
+variable with $\gamma$.
+We show that {\sys}'s $(\varepsilon, \delta)$-DP definition
+is strictly stronger than Tamaraw's $\gamma$-security definition.
+
+First, we explain Tamaraw's $\gamma$-security definition.
+In Tamaraw, $W$ is a random variable representing the label of a
+traffic trace.
+For a trace $w$, the random variables $T_{w}$ and $T_{w}^{D}$ respectively
+represent the packet trace of $w$ before and after shaping with a defense $D$.
+The distribution of $T_{w}^D$ captures all variations in the observed
+shape of $w$ resulting from both the defense mechanism and the
+network, while the distribution of $T_{w}$ only contains variations due to
+the network.
+%
+The attacker can measure the distribution of $W$ and $T_{w}^{D}$ independently.
+%
+Upon observing a network trace $t$, an optimal attack~$A$,~selects the
+label of the trace with maximum likelihood of observation:
+\begin{equation*}
+  A(t) = \argmax_{w}{\Pr[W=w]\Pr[T_{w}^{D}=t]}
+\end{equation*}
+The probability that an attack $A$ outputs label $w_i$ is $\Pr_A[w_i]$.
+\begin{definition*}[Tamaraw $\gamma$-privacy]
+  A fingerprinting defense $D$ is said to be uniformly $\gamma$-private if for the attack $\mathcal{A}$ if we have:
+  \begin{equation*}
+    \max_w\big[\Pr[A(T_w^D)=w]\big] \leq \gamma
+  \end{equation*}
+\end{definition*}
+\begin{proposition}
+  Tamaraw $\gamma$-privacy is strictly weaker than the notion of
+  $\varepsilon$-differential privacy.
+  \label{prop:tamaraw-vs-netshaper}
+\end{proposition}
+
+To prove \Cref{prop:tamaraw-vs-netshaper}, we prove the following two lemmas.
+\begin{lemma}
+  There exists a Tamaraw $\gamma$-private defense mechanism that fails to
+  satisfy $\varepsilon$-DP for any given value of $\varepsilon$.
+\end{lemma}
+\begin{proof}
+%  Assume a closed-world setup of $n$ webpages.
+Consider a web service with a dataset of $n$ web pages.
+We propose a defense $D$, which shapes pages to a constant-rate pattern $O_c$
+with probabilities $\alpha$ or $\beta$.
+$D$ reshapes page $w_j$ to $O_c$ with probability $\beta$ and
+all other pages $w_i \neq w_j$ with probability $\alpha$.
+If a page is not shaped, it is revealed.
+%\begin{enumerate}
+
+%\end{enumerate}
+
+The probability that any attack can correctly identify the label for $w_j$ is
+upper-bounded by:  $\Pr[A(T^{D}_{w_{i=j}}) = w_j]$
+\begin{align*}
+  & = \Pr[A(T^D_{w_{i=j}}) = w_j |
+  T^D_{w_{i=j}}=T_{w_{i=j}}]\Pr[T^D_{w_{i=j}}=T_{w_{i=j}}] +
+  \\
+  &~~~~\Pr[A(T^D_{w_{i=j}}) = w_j | T^D_{w_{i=j}}=O_c]\Pr[T^D_{w_{i=j}}=O_c]
+  \\
+  & \leq  1.(1-\beta) + \frac{1}{n}\beta = p_c^j
+\end{align*}
+For $(1- \frac{n\gamma - 1}{n-1}) < \beta$ we have: $p_c^j \leq \gamma$.
+%
+Similarly, the probability that any attack can correctly classify $w_{i\neq j}$
+is upper-bounded by $p_c^i = 1-\alpha + \frac{\alpha}{n}$, and for $(1-
+\frac{n\gamma - 1}{n-1}) < \alpha$ we have: $p_c^j \leq \gamma$.
+Therefore, for all values of $\alpha$ and $\beta$ such that $(1- \frac{n\gamma -
+1}{n-1}) < \beta < \alpha$, the probability that any attack can successfully
+guess~a~page is less than $\gamma$, and
+the defense is uniformly $\gamma$-private.
+
+When the output of the algorithm is $O_{c}$, the probability of the page being
+$w_j$ is $\beta$ and any other page is $\alpha$. Thus,
+%\begin{equation*}
+$\log(\frac{\Pr[T_{w_{i\neq j}}^{D}=O_{c}]}{\Pr[T_{w_{i=j}}^{D}=O_{c}]})
+= \log(\frac{\alpha}{\beta})$.
+%\end{equation*}
+By setting $\alpha > {e^{\varepsilon}}\beta$, we get a mechanism that is
+$\gamma$-private for Tamaraw but not $\varepsilon$-DP for {\sys}.
+%Therefore, it fails to guarantee $\varepsilon$-differential privacy.
+\vspace{-0.2cm}
+\end{proof}
+\begin{lemma}
+  A $\varepsilon$-DP shaping algorithm is Tamaraw $\gamma$-private for
+  $\varepsilon \leq \log(n\gamma)$.
+%  \begin{equation*}
+%    \varepsilon \leq \log(n\gamma)
+%  \end{equation*}
+\end{lemma}
+\begin{proof}
+For a trace $w$, the random variable $T_{w}^{DP}$ represents the packet
+trace of $w$ after a differentially private shaping mechanism is applied.
+%
+The classification attack on shaped traffic can
+%analysis the shaped traces so it can
+be considered a post-processing of the results of a
+differentially private shaping mechanism (i.e. defense) and, hence, is
+differentially
+private. Therefore, we have:
+\begin{align*}
+& \frac{\Pr[A(T_{w_{i}}^{DP}) = w_i]}{\Pr[A(T_{w_{j}}^{DP}) = w_i]} \leq e^
+{\varepsilon}
+\Rightarrow \Pr[A(T_{w_{i}}^{DP}) = w_i] \leq e^
+{\varepsilon} .\Pr[A(T_{w_{j}}^{DP}) = w_i]
+\end{align*}
+Intuitively, this implies that the likelihood of the attacker correctly
+classifying the trace with label $i$ compared to incorrectly classifying it with
+label $j$ is bounded by $e^{\varepsilon}$.
+The above inequality is correct for all $w_j: j\in \{1, 2, \dots, n\}$, and we
+can extend the above equation to calculate the summation over $j$:
+\vspace{-0.3cm}
+%Extending the above equation we have:
+\begin{align*}
+n\times \Pr[A(T_{w_{i}}^{DP}) = w_i] \leq e^{\varepsilon}\sum_{j=1}^{n}
+\Pr[A(T_{w_{j}}^{DP}) = w_i]
+= e^{\varepsilon} \operatorname{Pr}_{A}[w_i].
+\end{align*}
+%where $\Pr_{A}[w_i]$ is the probability that attack $A$ outputs the label
+%$w_i$.
+Thus, for any given trace $w_i$, the probability that any attack $A$,
+classifies it correctly is bounded by:
+%\begin{equation*}
+$\Pr[A(T_{w_{i}}^{DP}) = w_i] \leq \frac{e^{\varepsilon} \Pr_{A}[w_i]}{n}$.
+%\end{equation*}
+The probability that an attacker can guess the victim’s trace is bounded by:
+%\begin{align*}
+$\max_{w_i}{\Pr[A(T_{w_{i}}^{DP}) = w_i]} \leq \frac{e^{\varepsilon}}{n}
+\max_{w_i}{\operatorname{Pr}_{A}[w_i]} \leq \frac{e^{\varepsilon}}{n} \leq
+\gamma$.
+%\end{align*}
+\end{proof}
+}
+%Putting the two lemmas together, we prove that {\sys}'s DP is strictly stronger
+%than Tamaraw's privacy.

@@ -1,0 +1,185 @@
+\subsection{{Security Analysis}}
+\label{subsec:impl-security}
+{\sys} provides the following security property: an adversary cannot infer
+application secrets from observing tunnel traffic. This
+property is ensured by a combination of a secure shaping strategy, the tunnel design,
+and implementation.
+
+{\bf S1. Secure shaping strategy.} The tunnel transmits traffic in
+differentially private-sized bursts
+in fixed intervals. Thus, the overall shape is DP. The proof of DP is in
+\S\ref{appendix:dp}.
+
+{\bf S2. Secure tunnel design.}
+(i) The privacy guarantees of a tunnel are configured before the start of
+application transmission and do not change during the tunnel's lifetime.
+(ii)~The tunnel mediates control between the end hosts, \eg by
+transmitting custom connection establishment and termination messages. These
+messages are subject to the same DP shaping as the payload traffic
+(\S\ref{subsec:design-overview}).
+%(iii)~All payload traffic of a sensitive application passes through a tunnel
+%between a pair of middleboxes and is subjected to DP shaping and encryption.
+(iii) The payload and dummy bytes in network packets are indistinguishable
+because all payload and dummy bytes are packaged into QUIC packets and
+encrypted uniformly. Moreover, QUIC handles acknowledgements, congestion
+control, and loss recovery for both payload and dummy bytes uniformly
+(\S\ref{subsec:design-overview}).
+
+{\bf S3. Secure middlebox implementation.}
+{(i)} The unshaped traffic between an end host and its local middlebox is
+not visible to an adversary.
+(ii) {\dshaper} follows the tunnel design in transmitting payload and dummy
+bytes.
+%
+%(i) The control traffic between end hosts is intercepted at the middleboxes and
+%is not directly sent into the tunnel.
+%
+%(ii) The payload and dummy bytes in network packets are indistinguishable. This
+%is because both payload and dummy bytes are packaged into QUIC packets and
+%encrypted uniformly. Thus, QUIC handles acknowledgements, congestion control,
+%and loss recovery for both payload and dummy bytes
+%(\S\ref{subsec:impl-shaping}).
+%(iii) The sizes and timing of transmitted packets are secret-independent,
+%because
+(iii) The time required for {\prepare} to prepare and enqueue shaped
+buffers is masked to secret-independent times. The packetization of~buffers in
+QUIC is secret-independent~(\S\ref{sec:implementation}) and
+%(\S\ref{subsec:impl-shaping-security}) and
+thus retains DP guarantees after post-processing.
+Any delays in transmitting the buffers can arise only due to congestion or
+packet losses in the tunnel network, which are secret-independent events.
+%(iii) The time required to {\em prepare} the DP-sized buffers is independent of
+%application secrets. This is because {\sys}'s periodic interval is configured
+%such that it can handle all DP sizes. Thus, any delays in transmitting the
+%buffers can only arise due to congestion or packet losses in the tunnel network,
+%which are secret-independent events.
+%\todo{(iv) TODO: Verify that the middleboxes' handling of flow control do
+%not reveal secrets.}
+%
+%
+%{\bf S6.} No leaks are possible via the traffic shape of a non-sensitive
+%application, which is physically isolated (by assumption in our threat model).
+
+%\am{Discuss how middlebox's acks, handling of cc, flow control, loss recovery do
+%not reveal secrets.}
+
+%\subsection{Mitigating side-channel leaks}
+%\label{subsec:impl-side-channels}
+%A key challenge in ensuring sound {\nsca} mitigation could be side channels that
+%may impact the middlebox execution and reveal secrets. We first list the
+%sensitive information that can be potentially leaked via side channels and then
+%discuss mitigations for the leaks.
+%
+%%\paragraph{Secrets.}
+%There are three main types of secrets: the application data, the session keys
+%for E2E encryption on the end hosts, and the session keys for tunnel encryption
+%in the middlebox. Deviations of the tunnel transmissions from the DP schedule
+%could be correlated with these secrets, thus revealing the secrets to a network
+%observer.
+%%%
+%Since a middlebox is physically isolated from the end hosts, application keys
+%and data cannot directly influence the middlebox execution. However, the
+%application secrets could manifest into its traffic shape through its flow
+%control mechanism. We elaborate this with two scenarios.
+%%Thus, we only need to {\em performance isolate} the middlebox
+%%execution from the application's flow control and from the tunnel's keys.
+%
+%\emph{Application flow control.}
+%Consider an end-host application transmitting two secrets files A and B, each of
+%length $L_A$ and $L_B$ bytes, respectively, with $L_A < L_B$. Suppose that the
+%application transmits $L_A$ bytes to the middlebox in time $T_A < T$, whereas it
+%transmits $L_B$ bytes in time $T_B$ that spans two intervals of duration $T$,
+%say $L_{B_1}$ and $L_{B_2}$ in each interval, such that $L_{B_1} + L_{B_2} =
+%L_B$.
+%%Consider two consecutive intervals at the middlebox $T_i$ and $T_{i+1}$ and
+%For simplicity, suppose that the {\DPlogic} suggests transmitting $X$ bytes in
+%each shaping interval, where $X > max(L_A,~L_{B_1},~L_{B_2})$.
+%Now, suppose the application transmits files A and B consecutively, with file A
+%being transmitted just before the interval $T_i$ and file B being transmitted
+%just before the interval $T_{i+2}$ at the
+%middlebox. The {\DPlogic} will prepare buffers for transmission in each interval
+%as follows: $T_i: [L_A,~X - L_A],~T_{i+1}: [0,~X],~T_{i+2}: [L_{B_1},~X -
+%L_{B_1}],~T_{i+3}: [L_{B_2},~X - L_{B_2}]$.
+%%The first buffer will contain $L_A$ bytes of A and $X - L_A$ dummy
+%%bytes, while the second buffer will entirely contains $X$ dummy bytes.
+%First, processing payload and dummy bytes could take different amounts of time.
+%For
+%instance, adding dummy bytes could consistently take a few microseconds longer
+%than copying payload bytes.
+%Secondly, the execution of the {\DPlogic} could be influenced by the presence or
+%absence of payload traffic from the application. For instance, in a shaping
+%interval, the {\DPlogic} could be delayed or interrupted if the application
+%sends traffic and otherwise not. Such variances in the execution of {\DPlogic}
+%could ultimately manifest into observable timing of the buffer transmissions in
+%the tunnel, which could reveal information about the buffer contents (\eg
+%whether they contain dummy bytes or not).
+%
+%\emph{DShaper secret keys.}
+%The final secret in the tunnel are the keys used to encrypt the shaped traffic
+%in each tunnel session. Prior work has shown how crypto keys can be leaked via
+%various timing and microarchitectural side channels. Leak of the session keys
+%would allow a network observer to decrypt all tunnel traffic, thus invalidating
+%packet padding mitigations.
+%
+%Thus, we need to {\em performance isolate} the middlebox execution from the
+%application's flow control and from the tunnel's keys.
+%
+%\paragraph{Mitigation.}
+%For performance isolation, we rely on a combination of resource partitioning,
+%performance masking, and \todo{constant-time implementation} techniques.
+%First, we isolate the host-facing network stack and the tunnel stack into
+%separate VMs, which run on separate cores and have dedicated access to separate
+%physical NICs, DRAM and cache partitions. Furthermore, the interrupts for each
+%VM are dedicated to the respective cores.
+%
+%Next, the execution of the {\shapedVM} could be affected by the memory partition
+%hosting the datastructures shared with the {\unshapedVM} as well as the tunnel's
+%keys which are used for encrypting the shaped packet.  To address this, we pin
+%the datastructures in cache and implement the {\DPlogic} in constant time, and
+%we assume that the crypto implementation is constant time as well.
+%Finally, we {\em mask} the variance in the execution time of the path from the
+%{\DPlogic} to the \todo{tunnel's network stack}. For this, we profile the
+%worst-case execution time of this path and we delay forwarding of each packet
+%to the
+%stack until this worst-case time. Note this masking technique is conceptually
+%similar to that proposed in Pacer~\cite{mehta2022pacer}. \am{refine the
+%description}
+%
+%With the above mitigations in place, the only remaining side channels are due to
+%the resources that fundamentally remain shared -- the internal buses and the
+%off-core units that are shared among all cores (\eg APIC).  \todo{{\sys} does
+%    not explicitly address side channel leaks via these resources.} \am{Check
+%    DAGuise to justify this.}
+
+\subsection{Deployment and Maintenance}
+\label{subsec:design-discussion}
+{\sys}'s tunnel endpoint design and implementation are both very modular and
+portable.
+The middlebox components are compatible with all application layer protocols
+(\eg HTTPS, QUIC-TLS) and network stacks (\eg TCP, UDP, QUIC stacks).
+The {\ushaper} could also be implemented as a standard SOCKS5 proxy~\cite{torpt}.
+%The {\ushaper} component is compatible with all application layer protocols,
+%such as HTTPS and QUIC-TLS. It could also be implemented as a standard SOCKS5
+%proxy~\cite{torpt}. Similarly, the {\dshaper} is compatible with all transport
+%protocols and network stacks.
+
+A tunnel endpoint could be integrated with any node along an application's
+network path as long as the application traffic is unobservable until egress
+from the tunnel.
+%
+By integrating with a trusted VPN gateway of an organization,
+network administrators could manage ``long-term'' tunnels between the
+organization's campuses and support multiple applications without modifying
+individual end hosts. For instance, separate tunnels may be configured
+per-application according to the organizational needs, or
+configurations may be adapted based on coarse-grained changes in the traffic
+patterns through the~day.
+
+Alternatively, by integrating with end user devices, \eg with VPN clients,
+users could instantiate a new bidirectional tunnel with a service before
+each network activity, choose a different configuration for each tunnel
+instance, and close the tunnel after completion of the activity. A key
+requirement would be to secure the tunnel endpoint's execution from any internal
+side channels on the end host, which would be now more prevalent than in the
+middlebox setup.
+

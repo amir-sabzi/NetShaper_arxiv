@@ -1,0 +1,267 @@
+\section{Proof of {\sys}'s DP based Shaping}
+\label{appendix:dp}
+
+% \am{Revise annotations.}
+
+% \begin{algorithm}[t]
+%     \caption{{\sys} DP traffic shaping}
+%     \label{alg:dp_shaping_mechanism}
+%     \begin{algorithmic}[1]
+%         \While {\textbf{not} end of data transmission}
+%         \State $\tau$ = \texttt{current\_time()}
+%         %
+%         \State $\unshapedQ_{\tau}$ = \texttt{get\_size()}
+%         %
+%         \State $\tilde{\unshapedQ}_{\tau}$ = $\unshapedQ_{\tau} +
+%         \mathcal{N}\big(0,
+%         \frac{2\Delta}{\varepsilon}\ln(\frac{1.25}{\delta})\big)$ \;
+%         %
+%         \State \texttt{dequeue($\tilde{\unshapedQ}_{\tau}$)}
+%         \State \texttt{sleep($T$)}
+%         \EndWhile
+%     \end{algorithmic}
+% \end{algorithm}
+
+% \begin{assumption*}\label{assumption:window_appendix}
+%   All bytes enqueued at time $t$ are transmitted by time $t+W$.
+% \end{assumption*}
+
+
+% \begin{proposition}\label{prop:sensitivity-bound}
+  % {$\sys$} enforces $\qsens \leq \ssens$.
+% \end{proposition}
+
+{\small
+\begin{numprop}[\ref{prop:sensitivity}]
+  {$\sys$} enforces $\qsens \leq \ssens$.
+\end{numprop}
+\noindent To prove \Cref{prop:sensitivity}, we show that at any DP query time
+$k$, any neighboring streams $\istream, \istream'$ can only create a queue size
+difference such that $|\qlent{k} - \qlent{k}'| \leq \ssens$. This is formalized
+in the following Lemma:
+\begin{lemma}\label{lemma:sensitivity-time}
+Assume two neighboring traffic streams $\istream$ and $\istream'$
+($\|\istream-\istream'\|_1 \leq \ssens$), are transmitted through {\sys} and
+get the same randomness draws $z_k$ (they are parallel worlds with an identical
+  \sys, but the streams differ).
+Then, at any DP query time $k$, the length of the buffering queue for
+  $\istream$ and $\istream'$ are $\ssens$-close.
+Formally:
+
+\begin{equation}\label{equ:composition}
+        \forall k \geq 0 : |\qlent{k} - \qlent{k}'| \leq \ssens
+\end{equation}
+\end{lemma}
+\begin{proof}
+{\sys} performs a DP query for the size of the buffering queue at intervals of
+length $T$.
+While transmitting $\istream$, the queue length at the end of the
+$k$\textsuperscript{th} interval $\dpintvl_{k}$ is a function of three
+variables:
+%
+%\begin{enumerate}
+(i) The buffering queue length $\qlent{k-1}$ at the end of
+$\dpintvl_{k-1}$.
+%
+(ii) The total number of payload bytes that have been dequeued from the
+buffering queue in the $k$\textsuperscript{th} interval,
+${\payload}_{k}$.
+%
+(iii) The number of new payload bytes from the application stream added
+to the buffering queue since the previous interval, which is the sum of
+sizes of all packets arriving between $(k-1)$\textsuperscript{th} and
+$k$\textsuperscript{th} interval, \ie
+%        $\sum_{T_{k-1} \leq t < T_k} P^S_t$
+$\sum_{\dpintvl_{k-1} \leq t < \dpintvl_{k}} P^S_t$.
+%
+%\end{enumerate}
+% As $\istream$ and $\istream'$ are reshaped to the same $\ostream$,
+% the shaped buffer length for the two streams is the same in all intervals (i.e.
+% $\forall k
+% \geq 0 : \qlendpt{k} = \qlendpt{k}'$).
+%
+Therefore, the buffering queue length after dequeue in $\dpintvl_{k}$ is:
+\begin{equation}\label{equ:queue-state}
+\qlent{k} = {\qlent{k-1}} +
+{\sum_{\dpintvl_{k-1} \leq t < \dpintvl_{k}} P^S_t}
+%{\sum_{T_{k-1} \leq t < T_k} P^S_t}
+-
+{{\payload}_{k}}
+\end{equation}
+%\\
+The difference between the queue lengths of
+$\istream, \istream'$ at $\dpintvl_{k}$ is:
+{\footnotesize
+\begin{equation}\label{equ:queue_state_expansion}
+\qlent{k} - \qlent{k}'~=~(\qlent{k-1} - \qlent{k-1}')~+ (\sum_{\dpintvl_{k-1} \leq t < \dpintvl_{k}}P^S_t - \sum_{\dpintvl_{k-1} \leq t < \dpintvl_{k}}P^{S'}_t) - ({\payload}_{k} - {\payload}_{k}')
+\end{equation}}
+We divide the proof into two steps.
+First, we show that the dequeue stage of the shaping mechanism does not increase the difference in queue lengths.
+Secondly, we show that under \Cref{assumption:window}, the enqueue stage of incoming streams does not increase the difference in queue lengths beyond $\ssens$.
+
+% Given that $\istream$ and $\istream'$ are reshaped to the same output
+% stream $\ostream$, the sizes of output packets generated in each interval
+% $\dpintvl$ when transmitting either streams is the same. However, the
+% content of the output packets in each stream may differ based on the sizes and
+% timing of the packets in each input stream.
+% This implies that the number of payload bytes dequeued from the buffering queue
+% during shaping may not necessarily match when transmitting each stream.
+% %This is because one queue might not have a sufficient amount of traffic to meet
+% %the requirements of the DP decision, resulting in the need to add dummy traffic.
+% Nevertheless, the shaping mechanism always satisfies the following inequality:
+
+To show that the dequeue stage never increases the difference between queue
+lengths, we show that in any period $k$, we always dequeue more (or equal) data from
+the larger queue at the time of the DP query. Formally:
+\vspace{-0.2cm}
+\begin{equation}\label{equ:queue-dequeue}
+        (\qlent{k-1} - \qlent{k-1}') \cdot ({\payload}_{k} - {\payload}_{k}') \geq 0 ,
+\end{equation}
+where the indexes are because removal amount in period $k$ depends on the
+query result for the queue at $k-1$.
+%
+Assume without loss of generality that $\qlent{k-1} \geq \qlent{k-1}'$.
+Since each DP query receives the same noise, we get $\qlendpt{k-1} \geq
+\qlendpt{k-1}'$,
+and thus:
+\[
+  {\payload}_{k} = \min\big\{0, \qlendpt{k-1}, \qlent{k-1} \big\} \geq
+\min\big\{0, \qlendpt{k-1}', \qlent{k-1}'\big\} = {\payload}_{k}' .
+\]
+The case for $\qlent{k-1} \leq \qlent{k-1}'$ is symmetric, and we have
+ $\textrm{sign}(\qlent{k} - \qlent{k}') = \textrm{sign}({\payload}_{k} - {\payload}_{k}')$,
+which implies \Cref{equ:queue-dequeue}.
+%
+Moreover, we show:
+\begin{equation}\label{equation:deuque-size}
+\vspace{-0.1cm}
+  |{\payload}_{k} - {\payload}_{k}'| \leq |\qlent{k} - \qlent{k}'| ,
+\end{equation}
+using two cases and assuming that $\qlent{k} \geq \qlent{k}'$ (again the
+opposite case is
+symmetric). Either the DP noise is $\geq -\qlent{k}'$, and $\qlent{k} -
+\qlent{k}' = {\payload}_{k} - {\payload}_{k}'$. Or the DP noise is  $< -
+\qlent{k}'$, in which case ${\payload}_{k}' = 0$ but ${\payload}_{k} \leq
+\qlent{k} - \qlent{k}'$. Either way, \Cref{equation:deuque-size} holds.
+%
+We can now study the queue length difference over time:
+% Now, using \Cref{equ:queue-dequeue}, we prove the following:
+% \begin{equation*}
+% |\qlent{k} - \qlent{k}'| \leq |\qlent{k-1} - \qlent{k-1}'|
+% +
+% \sum_{\dpintvl_{k-1} \leq t < \dpintvl_{k}}|P^S_t - P^{S'}_t|
+% \end{equation*}
+% Let's consider $(\qlent{k}-\qlent{k}') \geq 0$.
+% (The case of $(\qlent{k}'-\qlent{k}) \geq 0$ is symmetric.)
+% Using \Cref{equ:queue_state_expansion}, we get:
+\begin{align*}
+\nonumber
+|\qlent{k} - \qlent{k}'| & =  |(\qlent{k-1} - \qlent{k-1}')
++
+(\sum_{\dpintvl_{k-1} \leq t < \dpintvl_{k}}P^S_t - P^{S'}_t) - ({\payload}_{k} -
+{\payload}_{k}') |
+\\
+& \leq
+|(\qlent{k-1} - \qlent{k-1}') - ({\payload}_{k} - {\payload}_{k}')|
++
+\sum_{\dpintvl_{k-1} \leq t < \dpintvl_{k}}|P^S_t - P^{S'}_t|
+\\
+& \leq
+|\qlent{k-1} - \qlent{k-1}'|
++
+\sum_{\dpintvl_{k-1} \leq t < \dpintvl_{k}}|P^S_t - P^{S'}_t|
+\end{align*}
+where the first equality uses \Cref{equ:queue_state_expansion} and the last
+inequality uses \Cref{equ:queue-dequeue} and \Cref{equation:deuque-size}.
+Intuitively, the dequeue stage never increases the difference between queue
+lengths.
+
+Finally, we are ready to bound the difference in queue length due to enqueues.
+%
+Let $d_k = |\qlent{k}-\qlent{k}'|$, and~$d_0 = 0$:
+%With $d_k = |\qlent{k}-\qlent{k}'|$ and $d_0 = 0$, we have:
+\begin{align}
+\nonumber
+  d_k &\leq d_{k-1}~+~\sum_{\dpintvl_{k-1} \leq t < \dpintvl_{k}}|P^S_t - P^{S'}_t|~=~
+\nonumber
+0 + \sum_{i=0}^{k}\big({\sum_{\dpintvl_{i-1} \leq t < \dpintvl_{i}}|P^S_t - P^{S'}_t|}\big)\\
+&=
+\nonumber
+\sum_{0 \leq t < \dpintvl_{k}} |P^S_t - P^{S'}_t| =
+\nonumber
+\sum_{0 \leq t < \dpintvl_k - W} |P^S_t - P^{S'}_t| +
+\sum_{\dpintvl_{k} - W \leq t < \dpintvl_{k}} |P^S_t - P^{S'}_t|\\
+\nonumber
+&\leq \ssens
+\end{align}
+since $\sum_{0 \leq t < \dpintvl_k - W} |P^S_t - P^{S'}_t| = 0$ by \Cref{assumption:window},
+and $\sum_{\dpintvl_{k} - W \leq t < \dpintvl_{k}} |P^S_t - P^{S'}_t| \leq \ssens$ by \Cref{def:neighboring-streams}.
+\end{proof}
+% To conclude, the maximum difference between queue lengths (\ie the sensitivity,
+% $\qsens$) is always bounded by $\ssens$.
+\vspace{-0.1cm}
+\Cref{lemma:sensitivity-time} $\implies$ \Cref{prop:sensitivity}, since
+%\begin{align*}
+$\qsens = \max_{k}~\max_{\istream, \istream'} | \qlent{k} - \qlent{k}' | \leq
+\ssens$.
+%\end{align*}
+}
+
+
+
+
+
+%%%%%%%%%%%%%%%%%
+%%%% old stuff
+%%%%%%%%%%%%%%%%%
+
+\if 0
+\begin{algorithm}[t]
+    \DontPrintSemicolon
+    \SetNoFillComment
+    % \KwIn{$S_N, Q, T, \varepsilon, w, D, min\_burstsize, max\_burstsize$}
+    \SetKwFunction{get}{get\_dp\_size}
+    \SetKwFunction{send}{send\_data}
+    \SetKwFunction{dequeue}{dequeue}
+    \SetKwFunction{doshape}{do\_shape}
+    \SetKwFunction{addhdr}{add\_dp\_header}
+    \SetKwFunction{encrypt}{encrypt}
+    \SetKwFunction{sendpkt}{send\_udp\_pkt}
+    \SetKwProg{Fn}{Function}{:}{}
+
+    \Fn{\get{$Q,\; \varepsilon$}}{
+        \am{where do $D_N$, $B_{min}$, $B_{max}$ come from?} \;
+        $D^N = Q + \mathcal{N}(0, \sigma)$ \;
+        $D^{N}_{clipped} =\max (B_{min}, \; \min (B_{max}, \; D_N))$ \;
+        \textbf{return} $D^{N}_{clipped}$ \;
+    }
+    \Fn{\send{$len_R,\; len_D,\; MTU$}}{
+        buf[0:$len_R$ -1] = \dequeue($Q_R$, $len_R$)\;
+        buf[$len_R$:$len_R$ + $len_D$ -1] = \dequeue($Q_D$, $len_D$)\;
+        \While{(buf.size $\neq$ 0)}{
+            plen = buf.size > MTU ? MTU : buf.size\;
+            pkt.payload = buf.get\_data(plen)\;
+            buf.size -= sizeof(pkt.payload)\;
+            \tcc{Header to track dummy data.}
+            pkt.payload = \addhdr(pkt.payload)\;
+            pkt.payload = \encrypt(pkt.payload)\;
+            \sendpkt(pkt)\;
+        }
+    }
+    \Fn{\doshape{}}{
+        %\textbf{SendPacket}(queue\_state, pkt\_size, delay)\;
+        \While{(not at end of data transmission)}{
+            {sleep}($T$)\;
+            $t$ = {get\_current\_time}()\;
+            $Q_t$ = {get\_queue\_size}($t$)\;
+            $D^S_t$ = \get($Q_t, \; \varepsilon$)\;
+            $D^R_t$ = $\min (Q_t, D^S_t)$ \tcc{payload len}
+            $D^P_t$ = $D^S_t - D^R_t$ \tcc{dummy len}
+            \send$(D^R_t,\; D^P_t,\; MTU)$ \;
+        }
+    }
+    \caption{Shaper logic}
+    \label{alg:middle-box-all}
+\end{algorithm}
+\fi
+

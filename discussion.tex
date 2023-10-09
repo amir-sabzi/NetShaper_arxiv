@@ -1,0 +1,105 @@
+\section{Limitations and Discussion}
+\label{sec:discussion}
+
+We discuss extensions of the {\sys}'s prototype to support additional usages.
+
+\if 0
+\paragraph{Multiplexing with non-sensitive flows}
+%{\sys} currently assumes that the network paths of non-sensitive and sensitive
+%flows are physically isolated. To overcome this limitation, {\sys} can integrate
+To route non-sensitive flows alongside sensitive flows, {\sys} can integrate
+TDMA (time division multiple access) scheduling \cite{vattikonda2012tdma,
+beams2021ifs} in its architecture. Specifically, {\sys} must employ a
+synchronous TDMA schedule on its ingress and egress ports and on its CPUs for
+each traffic class. When the slot for non-sensitive flows is scheduled, the
+traffic is simply routed from the {\sys}’s ingress port to the egress port and
+vice versa without any modifications.
+%
+Note that each tunnel endpoint can use a different TDMA schedule. A synchronous
+TDMA schedule between each pair of endpoints may be useful for minimizing
+overheads but is not essential for end-to-end security guarantees.
+\fi
+%\subsection{Alternate deployments of {\sys}}
+
+%\if 0
+\textbf{Scheduling multiple tunnels.}
+%When handling multiple tunnels, {\sys} must ensure that the
+%unshaped traffic of one tunnel is not leaked to another tunnel. Such leaks may
+%arise via contention side channels in the mdidlebox.
+When handling multiple tunnels, the unshaped traffic of one tunnel could
+indirectly affect the shape of traffic in another tunnel, thus potentially
+leaking the traffic of the first tunnels.
+%For this,
+{\sys} must isolate the tunnels from each other in the middlebox.
+%Based on \S\ref{sec:implementation}, we require that the {\prepare}
+%and QUIC worker threads must be performance isolated from {\ushaper} in each
+%tunnel, (ii) the timing of {\prepare} must be masked to secret-independent
+%times.
+{\sys} could partition the middlebox cores into three groups, each core group
+hosting the {\ushaper} process, the {\prepare} threads, and the QUIC worker
+threads from different tunnels.
+Additionally, {\sys} must use a TDMA schedule among the {\prepare} threads,
+while \update{padding} each thread's execution to a secret-independent time.
+%In {\sys}, only the {\dshaper} components need to be isolated. {\sys} uses a
+%TDMA to schedule the {\dshaper} processes of different tunnels.
+Since each {\prepare} thread enqueues shaped buffers at secret-independent
+times, QUIC workers of different tunnels can be scheduled to transmit
+packets arbitrarily.
+%can subsequently %package the buffers into packets and
+%transmit the packets in their tunnels following any arbitrary schedule.
+%
+%{Determining optimal TDMA schedules and their adaptation to the changing
+%number of active tunnels is left to future work.}
+%\am{Not implemented, remove?}
+%\fi
+
+\textbf{Generalization to multi-node communication.}
+%\todo{TODO: single application with multiple tiers (e.g., CDNs to serve
+%    different parts of a web request) -- general DAG topology}
+%\todo{TODO: multi-party communication (e.g., a group VoIP call relayed through a
+%    central server) -- star topology}
+%{\sys} mitigates network side channel leaks in bidirectional communications
+%between a client-server pair. However, {\sys}'s DP shaping can be extended
+Some applications may involve multiple nodes forming a communication graph,
+where the communication graph could uniquely identify application secrets.
+For example, dynamic web pages may be recognized from the traffic generated to
+all servers hosting web page components.
+%serving dynamic web pages may require downloading embedded objects from
+%multiple  servers.
+{\sys} can be extended to protect secrets in such applications.
+{\sys}'s middlebox is portable and can be easily added in front
+of each node to shape traffic on all links.
+A client could establish tunnels among all pairs of nodes in an application for
+the duration of its interaction with the application.
+Each link could use its own DP parameters for shaping; the privacy
+guarantees over the communication graph would be a composition of DP guarantees
+of all links in the graph.
+We leave a detailed analyses of privacy guarantees and overheads in a multi-node
+application to future work.
+%The key requirement is to model a ``buffering queue'' to define the maximum
+%information that could be accessed by an adversary in the communication graph.
+
+\textbf{Integrating {\sys} with end hosts.}
+To ensure end-to-end security while accessing sensitive services from outside
+organization premises, users could use a VPN client on their devices that is
+enhanced with {\sys}'s shaping capabilities. A key challenge would be to ensure
+performance isolation of the {\sys}-enhanced VPN client from the application
+handling sensitive data \cite{mehta2022pacer}.
+
+\textbf{Integrating {\sys} with other technologies.}
+{\sys} can be considered as a network function (NF) and can be integrated with a
+chain of other NFs, such as load balancers, firewalls, and intrusion-detection
+systems. {\sys} could be the first function in an NF chain, interfacing with the
+external network, which forwards inbound flows to other NFs after dropping
+padding and shapes only select outbound flows forwarded by the next NF in the
+chain. Placing {\sys} at the beginning of the chain would minimize the
+communication bandwidth within the NF chain and the private network.
+%\am{just mention as a one line somewhere earlier?}
+%\paragraph{Interaction between {\sys} and DPI technologies.}
+%{\sys} does not conflict with deep packet inspection (DPI) technologies, which
+%an organization may use to monitor their inbound traffic for suspicious
+%behaviors. However, {\sys} protects against third-party DPI which may
+
+
+%\subsection{Generalization for orthogonal goals}
+%\paragraph{Anonymity.}
