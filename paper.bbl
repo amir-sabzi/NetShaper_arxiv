@@ -1,0 +1,412 @@
+\begin{thebibliography}{10}
+
+\bibitem{hacl}
+{A Highw Assurance Cryptographic Library}.
+\newblock \url{https://hacl-star.github.io/}.
+\newblock Accessed on Sep 20, 2023.
+
+\bibitem{libsecp256k1}
+{libsecp256k1}.
+\newblock \url{https://github.com/bitcoin-core/secp256k1}.
+\newblock Accessed on Sep 20, 2023.
+
+\bibitem{torpt}
+{Pluggable Transports}.
+\newblock \url{https://obfuscation.github.io/}.
+\newblock Accessed on Jun 6, 2023.
+
+\bibitem{tcp-meltdown}
+{What is TCP Meltdown?}
+\newblock \url{https://openvpn.net/faq/what-is-tcp-meltdown/}.
+\newblock Accessed on Apr 30, 2023.
+
+\bibitem{wrk2}
+{wrk2: A constant throughput, correct latency recording variant of wrk}.
+\newblock \url{https://github.com/giltene/wrk2}.
+
+\bibitem{abusnaina2020dfd}
+A.~Abusnaina, R.~Jang, A.~Khormali, D.~Nyang, and D.~Mohaisen.
+\newblock {DFD: Adversarial Learning-based Approach to Defend Against Website
+  Fingerprinting}.
+\newblock {\em IEEE INFOCOMM}, 2020.
+
+\bibitem{almeida2016verifying}
+J.~B. Almeida, M.~Barbosa, G.~Barthe, F.~Dupressoir, and M.~Emmi.
+\newblock {Verifying Constant-Time Implementations}.
+\newblock {\em USENIX Security}, 2016.
+
+\bibitem{backes2013anoa}
+M.~Backes, A.~Kate, P.~Manoharan, S.~Meiser, and E.~Mohammadi.
+\newblock Anoa: A framework for analyzing anonymous communication protocols.
+\newblock {\em IEEE CSF}, 2013.
+
+\bibitem{bai2018tcn}
+S.~Bai, J.~Z. Kolter, and V.~Koltun.
+\newblock {An Empirical Evaluation of Generic Convolutional and Recurrent
+  Networks for Sequence Modeling}.
+\newblock {\em arXiv:1803.01271}, 2018.
+
+\bibitem{barradas2020poking}
+D.~Barradas, N.~Santos, L.~Rodrigues, and V.~Nunes.
+\newblock Poking a hole in the wall: Efficient censorship-resistant internet
+  communications by parasitizing on webrtc.
+\newblock {\em ACM CCS}, 2020.
+
+\bibitem{barradas2017deltashaper}
+D.~Barradas, N.~Santos, and L.~E. Rodrigues.
+\newblock Deltashaper: Enabling unobservable censorship-resistant tcp tunneling
+  over videoconferencing streams.
+\newblock {\em PETS}, 2017.
+
+\bibitem{beams2021ifs}
+A.~Beams, S.~Kannan, and S.~Angel.
+\newblock {Packet scheduling with optional client privacy}.
+\newblock {\em ACM CCS}, 2021.
+
+\bibitem{beckerle2022splitting}
+M.~Beckerle, J.~Magnusson, and T.~Pulls.
+\newblock {Splitting Hairs and Network Traces: Improved Attacks Against Traffic
+  Splitting as a Website Fingerprinting Defense}.
+\newblock {\em WPES}, 2022.
+
+\bibitem{bhat2019varcnn}
+S.~Bhat, D.~Lu, A.~Kwon, and S.~Devadas.
+\newblock {Var-CNN: A Data-Efficient Website Fingerprinting Attack Based on
+  Deep Learning}.
+\newblock {\em PETS}, 2019.
+
+\bibitem{braun2015robust}
+B.~A. Braun, S.~Jana, and D.~Boneh.
+\newblock {Robust and Efficient Elimination of Cache and Timing Side Channels}.
+\newblock {\em arXiv:1506.00189}, 2015.
+
+\bibitem{cai2014csbuflo}
+X.~Cai, R.~Nithyanand, and R.~Johnson.
+\newblock {CS-BuFLO: A Congestion Sensitive Website Fingerprinting Defense}.
+\newblock {\em WPES}, 2014.
+
+\bibitem{cai2014tamaraw}
+X.~Cai, R.~Nithyanand, T.~Wang, R.~Johnson, and I.~Goldberg.
+\newblock {A systematic approach to developing and evaluating website
+  fingerprinting defenses}.
+\newblock {\em ACM CCS}, 2014.
+
+\bibitem{chatzikokolakis2013broadening}
+K.~Chatzikokolakis, M.~E. Andr{\'e}s, N.~E. Bordenabe, and C.~Palamidessi.
+\newblock {Broadening the Scope of Differential Privacy Using Metrics}.
+\newblock {\em PETS}, 2013.
+
+\bibitem{chen2010reality}
+S.~Chen, R.~Wang, X.~Wang, and K.~Zhang.
+\newblock {Side-Channel Leaks in Web Applications: A Reality Today, a Challenge
+  Tomorrow}.
+\newblock {\em IEEE S\&P}, 2010.
+
+\bibitem{cherubin2017llama}
+G.~Cherubin, J.~Hayes, and M.~Juarez.
+\newblock {Website Fingerprinting Defenses at the Application Layer}.
+\newblock {\em PETS}, 2017.
+
+\bibitem{danezis2009https}
+G.~Danezis.
+\newblock {Traffic Analysis of the HTTP Protocol over TLS}.
+\newblock \url{http://www0.cs.ucl.ac.uk/staff/G.Danezis/papers/TLSanon.pdf},
+  2009.
+
+\bibitem{cadena2020trafficsliver}
+W.~De~la Cadena, A.~Mitseva, J.~Hiller, J.~Pennekamp, S.~Reuter, J.~Filter,
+  T.~Engel, K.~Wehrle, and A.~Panchenko.
+\newblock {TrafficSliver: Fighting Website Fingerprinting Attacks with Traffic
+  Splitting}.
+\newblock {\em ACM CCS}, 2020.
+
+\bibitem{dong2022gaussian}
+J.~Dong, A.~Roth, and W.~J. Su.
+\newblock Gaussian differential privacy.
+\newblock {\em Journal of the Royal Statistical Society Series B: Statistical
+  Methodology}, 2022.
+
+\bibitem{dwork2010dpcontinual}
+C.~Dwork, M.~Naor, T.~Pitassi, and G.~N. Rothblum.
+\newblock {Differential Privacy under Continual Observation}.
+\newblock {\em ACM STOC}, 2010.
+
+\bibitem{dwork2010pan}
+C.~Dwork, M.~Naor, T.~Pitassi, G.~N. Rothblum, and S.~Yekhanin.
+\newblock {Pan-Private Streaming Algorithms}.
+\newblock {\em Intl. Conf. on Supercomputing (ICS)}, 2010.
+
+\bibitem{dwork2014algorithmic}
+C.~Dwork, A.~Roth, et~al.
+\newblock {The Algorithmic Foundations of Differential Privacy}.
+\newblock {\em Foundations and Trends{\textregistered} in Theoretical Computer
+  Science}, 9(3--4):211--407, 2014.
+
+\bibitem{dyer2012peekaboo}
+K.~P. Dyer, S.~E. Coull, T.~Ristenpart, and T.~Shrimpton.
+\newblock {Peek-a-boo, I still see you: Why efficient traffic analysis
+  countermeasures fail}.
+\newblock {\em {IEEE S\&P}}, 2012.
+
+\bibitem{dpdk}
+L.~Foundation.
+\newblock Data plane development kit ({DPDK}), 2015.
+
+\bibitem{gong2020zero}
+J.~Gong and T.~Wang.
+\newblock {Zero-delay Lightweight Defenses against Website Fingerprinting}.
+\newblock {\em USENIX Security}, 2020.
+
+\bibitem{gong2022surakav}
+J.~Gong, W.~Zhang, C.~Zhang, and T.~Wang.
+\newblock {Surakav: Generating Realistic Traces for a Strong Website
+  Fingerprinting Defense}.
+\newblock {\em IEEE S\&P}, 2022.
+
+\bibitem{hayes2016kfp}
+J.~Hayes and G.~Danezis.
+\newblock {k-fingerprinting: A Robust Scalable Website Fingerprinting
+  Technique}.
+\newblock {\em USENIX Security}, 2016.
+
+\bibitem{hoang2021domain}
+N.~P. Hoang, A.~A. Niaki, P.~Gill, and M.~Polychronakis.
+\newblock {Domain Name Encryption is Not Enough: Privacy Leakage via IP-based
+  Website Fingerprinting}.
+\newblock {\em PETS}, 2021.
+
+\bibitem{honda2005tcpovertcp}
+O.~Honda, H.~Ohsaki, M.~Imase, M.~Ishizuka, and J.~Murayama.
+\newblock {Understanding TCP over TCP: effects of TCP tunneling on end-to-end
+  throughput and latency}.
+\newblock {\em Performance, Quality of Service, and Control of Next-Generation
+  Communication and Sensor Networks III}, 2005.
+
+\bibitem{hou2020wf}
+C.~Hou, G.~Gou, J.~Shi, P.~Fu, and G.~Xiong.
+\newblock Wf-gan: Fighting back against website fingerprinting attack using
+  adversarial learning.
+\newblock {\em IEEE Symposium on Computers and Communications (ISCC)}, 2020.
+
+\bibitem{rfc9000}
+J.~Iyengar and M.~Thomson.
+\newblock {QUIC: A UDP-Based Multiplexed and Secure Transport}.
+\newblock RFC 9000, May 2021.
+
+\bibitem{juarez2016wtfpad}
+M.~Juarez, M.~Imani, M.~Perry, C.~Diaz, and M.~Wright.
+\newblock {Toward an Efficient Website Fingerprinting Defense}.
+\newblock {\em ESORICS}, 2016.
+
+\bibitem{kasiviswanathan2014semantics}
+S.~P. Kasiviswanathan and A.~Smith.
+\newblock On the 'semantics' of differential privacy: A bayesian formulation.
+\newblock {\em Journal of Privacy and Confidentiality}, 2014.
+
+\bibitem{kellaris2014differentially}
+G.~Kellaris, S.~Papadopoulos, X.~Xiao, and D.~Papadias.
+\newblock {Differentially Private Event Sequences over Infinite Streams}.
+\newblock {\em VLDB Endowment}, 7(12), 2014.
+
+\bibitem{lazar2018karaoke}
+D.~Lazar, Y.~Gilad, and N.~Zeldovich.
+\newblock {Karaoke: Distributed Private Messaging Immune to Passive Traffic
+  Analysis}.
+\newblock {\em USENIX OSDI}, 2018.
+
+\bibitem{lecuyer2019certified}
+M.~Lecuyer, V.~Atlidakis, R.~Geambasu, D.~Hsu, and S.~Jana.
+\newblock Certified robustness to adversarial examples with differential
+  privacy.
+\newblock {\em IEEE S\&P}, 2019.
+
+\bibitem{liu2016catalyst}
+F.~Liu, Q.~Ge, Y.~Yarom, F.~Mckeen, C.~Rozas, G.~Heiser, and R.~B. Lee.
+\newblock {CATalyst: Defeating last-level cache side channel attacks in cloud
+  computing}.
+\newblock {\em IEEE HPCA}, 2016.
+
+\bibitem{lu2018dynaflow}
+D.~Lu, S.~Bhat, A.~Kwon, and S.~Devadas.
+\newblock {DynaFlow: An Efficient Website Fingerprinting Defense Based on
+  Dynamically-Adjusting Flows}.
+\newblock {\em WPES}, 2018.
+
+\bibitem{luo2011httpos}
+X.~Luo, P.~Zhou, E.~W. Chan, W.~Lee, R.~K. Chang, and R.~Perdisci.
+\newblock {HTTPOS: Sealing Information Leaks with Browser-side Obfuscation of
+  Encrypted Flows}.
+\newblock {\em NDSS}, 2011.
+
+\bibitem{mehta2022pacer}
+A.~Mehta, M.~Alzayat, R.~De~Viti, B.~B. Brandenburg, P.~Druschel, and D.~Garg.
+\newblock {Pacer: Comprehensive Network Side-Channel Mitigation in the Cloud}.
+\newblock {\em USENIX Security}, 2022.
+
+\bibitem{meier2022ditto}
+R.~Meier, V.~Lenders, and L.~Vanbever.
+\newblock {Ditto: WAN traffic obfuscation at line rate}.
+\newblock {\em NDSS}, 2022.
+
+\bibitem{mironov2017renyi}
+I.~Mironov.
+\newblock {R{\'e}nyi differential privacy}.
+\newblock {\em IEEE CSF}, 2017.
+
+\bibitem{mohajeri2012skypemorph}
+H.~Mohajeri~Moghaddam, B.~Li, M.~Derakhshani, and I.~Goldberg.
+\newblock {Skypemorph: Protocol Obfuscation for Tor Bridges}.
+\newblock {\em ACM CCS}, 2012.
+
+\bibitem{nasr2021defeating}
+M.~Nasr, A.~Bahramali, and A.~Houmansadr.
+\newblock {Defeating DNN-Based Traffic Analysis Systems in Real-Time With Blind
+  Adversarial Perturbations}.
+\newblock {\em USENIX Security}, 2021.
+
+\bibitem{nithyanand2014glove}
+R.~Nithyanand, X.~Cai, and R.~Johnson.
+\newblock {Glove: A Bespoke Website Fingerprinting Defense}.
+\newblock {\em WPES}, 2014.
+
+\bibitem{rahman2020mockingbird}
+M.~S. Rahman, M.~Imani, N.~Mathews, and M.~Wright.
+\newblock {Mockingbird: Defending Against Deep-Learning-Based Website
+  Fingerprinting Attacks with Adversarial Traces}.
+\newblock {\em IEEE Trans. on Information Forensics and Security}, 16, 2020.
+
+\bibitem{rastogi2010differentially}
+V.~Rastogi and S.~Nath.
+\newblock Differentially private aggregation of distributed time-series with
+  transformation and encryption.
+\newblock {\em ACM Intl. Conf. on Management of Data}, 2010.
+
+\bibitem{rosen2021balboa}
+M.~B. Rosen, J.~Parker, and A.~J. Malozemoff.
+\newblock Balboa: Bobbing and weaving around network censorship.
+\newblock {\em USENIX Security}, 2021.
+
+\bibitem{saponas2007devices}
+T.~S. Saponas, J.~Lester, C.~Hartung, S.~Agarwal, T.~Kohno, et~al.
+\newblock {Devices That Tell on You: Privacy Trends in Consumer Ubiquitous
+  Computing.}
+\newblock {\em USENIX Security}, 2007.
+
+\bibitem{schuster2017beautyburst}
+R.~Schuster, V.~Shmatikov, and E.~Tromer.
+\newblock {Beauty and the Burst: Remote Identification of Encrypted Video
+  Streams}.
+\newblock {\em USENIX Security}, 2017.
+
+\bibitem{shan2021dolos}
+S.~Shan, A.~N. Bhagoji, H.~Zheng, and B.~Y. Zhao.
+\newblock {Patch-based Defenses against Web Fingerprinting Attacks}.
+\newblock {\em AISec}, 2021.
+
+\bibitem{shapira2019flowpic}
+T.~Shapira and Y.~Shavitt.
+\newblock {Flowpic: Encrypted internet traffic classification is as easy as
+  image recognition}.
+\newblock {\em IEEE Conf. on Computer Communications Workshops}, 2019.
+
+\bibitem{shi2011limiting}
+J.~Shi, X.~Song, H.~Chen, and B.~Zang.
+\newblock {Limiting Cache-based Side-Channel in Multi-Tenant Cloud using
+  Dynamic Page Coloring}.
+\newblock {\em IEEE/IFIP Intl. Conf. on Dependable Systems and Networks
+  Workshops (DSN-W)}, 2011.
+
+\bibitem{sirinam2018df}
+P.~Sirinam, M.~Imani, M.~Juarez, and M.~Wright.
+\newblock Deep fingerprinting: Undermining website fingerprinting defenses with
+  deep learning.
+\newblock {\em ACM CCS}, 2018.
+
+\bibitem{smith2022qcsd}
+J.-P. Smith, L.~Dolfi, P.~Mittal, and A.~Perrig.
+\newblock {QCSD: A QUIC Client-Side Website-Fingerprinting Defence Framework}.
+\newblock {\em USENIX Security}, 2022.
+
+\bibitem{videostats}
+Statista.
+\newblock {Length of online videos watched on social media platforms worldwide
+  in August 2021, by age group}.
+\newblock \url{https://tinyurl.com/9u4ystpe}, 2023.
+\newblock Accessed on Sep 20, 2023.
+
+\bibitem{tan2017sfi}
+G.~Tan.
+\newblock {Principles and Implementation Techniques of Software-Based Fault
+  Isolation}.
+\newblock {\em Foundations and Trends{\textregistered} in Privacy and
+  Security}, 1(3), 2017.
+
+\bibitem{van2015vuvuzela}
+J.~Van Den~Hooff, D.~Lazar, M.~Zaharia, and N.~Zeldovich.
+\newblock {Vuvuzela: Scalable private messaging resistant to traffic analysis}.
+\newblock {\em ACM SOSP}, 2015.
+
+\bibitem{varadarajan2014scheduler}
+V.~Varadarajan, T.~Ristenpart, and M.~M. Swift.
+\newblock {Scheduler-based Defenses against~Cross-VM Side-channels.}
+\newblock {\em USENIX Security,~\textnormal{2014}}.
+
+\bibitem{vattikonda2012tdma}
+B.~C. Vattikonda, G.~Porter, A.~Vahdat, and A.~C. Snoeren.
+\newblock {Practical TDMA for Datacenter Ethernet}.
+\newblock {\em ACM EuroSys}, 2012.
+
+\bibitem{wang2022leveraging}
+M.~Wang, A.~Kulshrestha, L.~Wang, and P.~Mittal.
+\newblock {Leveraging Strategic Connection Migration-powered Traffic Splitting
+  for Privacy}.
+\newblock {\em Privacy Enhancing Technologies (PETS)}, 2022.
+
+\bibitem{wang2014supersequence}
+T.~Wang, X.~Cai, R.~Nithyanand, R.~Johnson, and I.~Goldberg.
+\newblock {Effective Attacks and Provable Defenses for Website Fingerprinting}.
+\newblock {\em USENIX Security}, 2014.
+
+\bibitem{wang2017walkietalkie}
+T.~Wang and I.~Goldberg.
+\newblock {Walkie-Talkie: An Efficient Defense Against Passive Website
+  Fingerprinting Attacks}.
+\newblock {\em USENIX Security}, 2017.
+
+\bibitem{mpeg-dash}
+C.~Westphal, S.~Lederer, C.~Mueller, A.~Detti, D.~Corujo, J.~Wang, M.-J.
+  Montpetit, N.~Murray, C.~Timmerer, D.~Posch, A.~Azgin, and W.~Liu.
+\newblock {RFC 7933: Adaptive Video Streaming over Information-Centric
+  Networking (ICN)}.
+\newblock \url{https://datatracker.ietf.org/doc/html/rfc3168}.
+\newblock Accessed on Apr 30, 2023.
+
+\bibitem{white2011phonotactic}
+A.~M. White, A.~R. Matthews, K.~Z. Snow, and F.~Monrose.
+\newblock {Phonotactic reconstruction of encrypted voip conversations: Hookt on
+  fon-iks}.
+\newblock {\em IEEE S\&P}, 2011.
+
+\bibitem{winter2013scramblesuit}
+P.~Winter, T.~Pulls, and J.~Fuss.
+\newblock {ScrambleSuit: A Polymorphic Network Protocol to Circumvent
+  Censorship}.
+\newblock {\em WPES}, 2013.
+
+\bibitem{wright2009morphing}
+C.~V. Wright, S.~E. Coull, and F.~Monrose.
+\newblock Traffic morphing: An efficient defense against statistical traffic
+  analysis.
+\newblock {\em NDSS}, 2009.
+
+\bibitem{zhang2011predinteractive}
+D.~Zhang, A.~Askarov, and A.~C. Myers.
+\newblock {Predictive Mitigation of Timing Channels in Interactive Systems}.
+\newblock {\em ACM CCS}, 2011.
+
+\bibitem{zhang2019statistical}
+X.~Zhang, J.~Hamm, M.~K. Reiter, and Y.~Zhang.
+\newblock {Statistical Privacy for Streaming Traffic}.
+\newblock {\em NDSS}, 2019.
+
+\end{thebibliography}
