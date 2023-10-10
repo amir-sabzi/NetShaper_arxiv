@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023) (preloaded format=pdflatex 2023.9.5)  9 OCT 2023 18:49
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023) (preloaded format=pdflatex 2023.9.5)  9 OCT 2023 20:55
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1146,10 +1146,10 @@ Underfull \hbox (badness 6741) in paragraph at lines 647--661
 ]\OML/ptmcm/m/it/10 ; []; []; [] \OMS/pzccm/m/n/10 g$ \T1/ptm/m/n/10 (+20) and
  []
 
-<design2.pdf, id=325, 450.68375pt x 141.52875pt>
-File: design2.pdf Graphic file (type pdf)
-<use design2.pdf>
-Package pdftex.def Info: design2.pdf  used on input line 804.
+<design2-figure.pdf, id=325, 450.68375pt x 141.52875pt>
+File: design2-figure.pdf Graphic file (type pdf)
+<use design2-figure.pdf>
+Package pdftex.def Info: design2-figure.pdf  used on input line 804.
 (pdftex.def)             Requested size: 241.02039pt x 75.68797pt.
 [6]) (./design2.tex
 LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <8> not available
@@ -1160,7 +1160,7 @@ Package microtype Info: Fixing zero \fontdimen 6 for font `U/dsrom/m/n/8'
 (microtype)             (new value: 8.0pt) on input line 120.
 Package microtype Info: Fixing zero \fontdimen 6 for font `U/dsrom/m/n/5'
 (microtype)             (new value: 5.0pt) on input line 120.
- [7 <./design2.pdf>]
+ [7 <./design2-figure.pdf>]
 <middlebox-arch3.pdf, id=367, 709.65125pt x 255.95625pt>
 File: middlebox-arch3.pdf Graphic file (type pdf)
 <use middlebox-arch3.pdf>
@@ -1224,25 +1224,25 @@ d_video_updated.pdf> <./privacy_loss_VS_query_num_video_updated.pdf>]
 File: latency_vs_dp_interval_video_updated.pdf Graphic file (type pdf)
 <use latency_vs_dp_interval_video_updated.pdf>
 Package pdftex.def Info: latency_vs_dp_interval_video_updated.pdf  used on inpu
-t line 822.
+t line 820.
 (pdftex.def)             Requested size: 118.1013pt x 59.90868pt.
 <overhead_vs_dp_interval_video_updated.pdf, id=643, 342.83836pt x 182.97923pt>
 File: overhead_vs_dp_interval_video_updated.pdf Graphic file (type pdf)
 <use overhead_vs_dp_interval_video_updated.pdf>
 Package pdftex.def Info: overhead_vs_dp_interval_video_updated.pdf  used on inp
-ut line 829.
+ut line 827.
 (pdftex.def)             Requested size: 118.1013pt x 63.03296pt.
 <latency_vs_dp_interval_web_updated.pdf, id=644, 347.3082pt x 194.10881pt>
 File: latency_vs_dp_interval_web_updated.pdf Graphic file (type pdf)
 <use latency_vs_dp_interval_web_updated.pdf>
 Package pdftex.def Info: latency_vs_dp_interval_web_updated.pdf  used on input 
-line 837.
+line 833.
 (pdftex.def)             Requested size: 118.1013pt x 66.00499pt.
 <overhead_vs_dp_interval_web_updated.pdf, id=645, 338.36855pt x 194.10881pt>
 File: overhead_vs_dp_interval_web_updated.pdf Graphic file (type pdf)
 <use overhead_vs_dp_interval_web_updated.pdf>
 Package pdftex.def Info: overhead_vs_dp_interval_web_updated.pdf  used on input
- line 844.
+ line 840.
 (pdftex.def)             Requested size: 118.1013pt x 67.74953pt.
 <overhead_vs_number_of_traces_video_bidirectional_loglog_updated.pdf, id=646, 3
 52.26292pt x 194.56363pt>
@@ -1250,7 +1250,7 @@ File: overhead_vs_number_of_traces_video_bidirectional_loglog_updated.pdf Graph
 ic file (type pdf)
 <use overhead_vs_number_of_traces_video_bidirectional_loglog_updated.pdf>
 Package pdftex.def Info: overhead_vs_number_of_traces_video_bidirectional_loglo
-g_updated.pdf  used on input line 854.
+g_updated.pdf  used on input line 847.
 (pdftex.def)             Requested size: 116.89502pt x 64.56244pt.
 <overhead_vs_number_of_traces_web_bidirectional_loglog_updated.pdf, id=647, 352
 .26292pt x 194.56363pt>
@@ -1258,15 +1258,15 @@ File: overhead_vs_number_of_traces_web_bidirectional_loglog_updated.pdf Graphic
  file (type pdf)
 <use overhead_vs_number_of_traces_web_bidirectional_loglog_updated.pdf>
 Package pdftex.def Info: overhead_vs_number_of_traces_web_bidirectional_loglog_
-updated.pdf  used on input line 861.
-(pdftex.def)             Requested size: 118.1013pt x 65.23042pt.
+updated.pdf  used on input line 854.
+(pdftex.def)             Requested size: 116.89502pt x 64.56244pt.
  [12 <./throughput_vs_client_num.pdf> <./latencies_vs_client_num-logscale.pdf>]
 ) (./related.tex
 [13 <./latency_vs_dp_interval_video_updated.pdf> <./overhead_vs_dp_interval_vid
 eo_updated.pdf> <./latency_vs_dp_interval_web_updated.pdf> <./overhead_vs_dp_in
 terval_web_updated.pdf> <./overhead_vs_number_of_traces_video_bidirectional_log
 log_updated.pdf> <./overhead_vs_number_of_traces_web_bidirectional_loglog_updat
-ed.pdf>]) (./conclusion.tex) (./acks.tex) [14] (./paper.bbl
+ed.pdf>]) (./conclusion.tex) (./acks.tex) (./paper.bbl [14]
 Underfull \hbox (badness 10000) in paragraph at lines 19--22
 []\T1/ptm/m/n/8 (+20) What is TCP Melt-down?  [][]$\T1/pcr/m/n/8 https : / / op
 envpn . net / faq /
@@ -1308,8 +1308,7 @@ File: neighboring_distances_barplot_web.pdf Graphic file (type pdf)
 Package pdftex.def Info: neighboring_distances_barplot_web.pdf  used on input l
 ine 13.
 (pdftex.def)             Requested size: 118.1013pt x 63.47516pt.
- [16 <./TCN_arch.pdf>]
-<privacy_loss_VS_noise_std_low_sensitivity_updated.pdf, id=1129, 357.18756pt x 
+<privacy_loss_VS_noise_std_low_sensitivity_updated.pdf, id=1117, 357.18756pt x 
 194.56363pt>
 File: privacy_loss_VS_noise_std_low_sensitivity_updated.pdf Graphic file (type 
 pdf)
@@ -1317,7 +1316,7 @@ pdf)
 Package pdftex.def Info: privacy_loss_VS_noise_std_low_sensitivity_updated.pdf 
  used on input line 27.
 (pdftex.def)             Requested size: 118.1013pt x 64.33087pt.
-<privacy_loss_VS_noise_std_high_sensitivity_updated.pdf, id=1130, 349.15756pt x
+<privacy_loss_VS_noise_std_high_sensitivity_updated.pdf, id=1118, 349.15756pt x
  194.56363pt>
 File: privacy_loss_VS_noise_std_high_sensitivity_updated.pdf Graphic file (type
  pdf)
@@ -1325,7 +1324,7 @@ File: privacy_loss_VS_noise_std_high_sensitivity_updated.pdf Graphic file (type
 Package pdftex.def Info: privacy_loss_VS_noise_std_high_sensitivity_updated.pdf
   used on input line 33.
 (pdftex.def)             Requested size: 118.1013pt x 65.80934pt.
-<privacy_loss_VS_query_num_low_sensitivity_updated.pdf, id=1131, 361.20258pt x 
+<privacy_loss_VS_query_num_low_sensitivity_updated.pdf, id=1119, 361.20258pt x 
 194.56363pt>
 File: privacy_loss_VS_query_num_low_sensitivity_updated.pdf Graphic file (type 
 pdf)
@@ -1333,7 +1332,7 @@ pdf)
 Package pdftex.def Info: privacy_loss_VS_query_num_low_sensitivity_updated.pdf 
  used on input line 46.
 (pdftex.def)             Requested size: 118.1013pt x 63.61539pt.
-<privacy_loss_VS_query_num_high_sensitivity_updated.pdf, id=1132, 353.6274pt x 
+<privacy_loss_VS_query_num_high_sensitivity_updated.pdf, id=1120, 353.6274pt x 
 194.56363pt>
 File: privacy_loss_VS_query_num_high_sensitivity_updated.pdf Graphic file (type
  pdf)
@@ -1345,15 +1344,15 @@ Package microtype Info: Fixing zero \fontdimen 6 for font `U/dsrom/m/n/9'
 (microtype)             (new value: 9.0pt) on input line 79.
 Package microtype Info: Fixing zero \fontdimen 6 for font `U/dsrom/m/n/7'
 (microtype)             (new value: 7.0pt) on input line 79.
-) (./overheads_without_max.tex
-<overhead_vs_dp_interval_video_updated_no_max.pdf, id=1145, 350.05283pt x 182.9
+ [16 <./TCN_arch.pdf>]) (./overheads_without_max.tex
+<overhead_vs_dp_interval_video_updated_no_max.pdf, id=1146, 350.05283pt x 182.9
 7923pt>
 File: overhead_vs_dp_interval_video_updated_no_max.pdf Graphic file (type pdf)
 <use overhead_vs_dp_interval_video_updated_no_max.pdf>
 Package pdftex.def Info: overhead_vs_dp_interval_video_updated_no_max.pdf  used
  on input line 50.
 (pdftex.def)             Requested size: 118.1013pt x 61.73466pt.
-<overhead_vs_dp_interval_web_updated_no_max.pdf, id=1146, 345.583pt x 194.10881
+<overhead_vs_dp_interval_web_updated_no_max.pdf, id=1147, 345.583pt x 194.10881
 pt>
 File: overhead_vs_dp_interval_web_updated_no_max.pdf Graphic file (type pdf)
 <use overhead_vs_dp_interval_web_updated_no_max.pdf>
@@ -1361,7 +1360,7 @@ Package pdftex.def Info: overhead_vs_dp_interval_web_updated_no_max.pdf  used o
 n input line 66.
 (pdftex.def)             Requested size: 118.1013pt x 66.33376pt.
 <overhead_vs_number_of_traces_video_bidirectional_loglog_updated_no_max.pdf, id
-=1147, 352.26292pt x 194.56363pt>
+=1148, 352.26292pt x 194.56363pt>
 File: overhead_vs_number_of_traces_video_bidirectional_loglog_updated_no_max.pd
 f Graphic file (type pdf)
 <use overhead_vs_number_of_traces_video_bidirectional_loglog_updated_no_max.pdf
@@ -1370,7 +1369,7 @@ Package pdftex.def Info: overhead_vs_number_of_traces_video_bidirectional_loglo
 g_updated_no_max.pdf  used on input line 82.
 (pdftex.def)             Requested size: 118.1013pt x 65.23042pt.
 <overhead_vs_number_of_traces_web_bidirectional_loglog_updated_no_max.pdf, id=1
-148, 352.26292pt x 194.56363pt>
+149, 352.26292pt x 194.56363pt>
 File: overhead_vs_number_of_traces_web_bidirectional_loglog_updated_no_max.pdf 
 Graphic file (type pdf)
 <use overhead_vs_number_of_traces_web_bidirectional_loglog_updated_no_max.pdf>
@@ -1400,24 +1399,24 @@ ccm/m/n/9 ^^@ \OML/ptmcm/m/it/9 P[]\OMS/pzccm/m/n/9 j \OT1/ptmcm/m/n/9 = 0$ \T1
 ) (./tamaraw.tex)
 - LAST -
 Extra skip:0.0pt
-Left:668.67476pt/0.0pt
-Right:648.91507pt/3.3279pt
-Split: 650.43pt
-Output:650.43pt
-Pageshrink: 42.0pt
-Pagestretch: 47.0pt
+Left:621.5202pt/0.0pt
+Right:628.21411pt/3.3279pt
+Split: 630.21764pt
+Output:630.21764pt
+Pageshrink: 38.0pt
+Pagestretch: 44.0pt
 @colht:650.43pt
-FLUSHEND [output]: 650.43pt
-FLUSHEND [leftcolumn badness]: 8
+FLUSHEND [output]: 630.21764pt
+FLUSHEND [leftcolumn badness]: 1
 FUSHEND [rightcolumn badness]: 0
  [18] (./paper.aux)
 Package rerunfilecheck Info: File `paper.out' has not changed.
 (rerunfilecheck)             Checksum: 9BAC088FF3A24C21B27FEC309418E302;5003.
  ) 
 Here is how much of TeX's memory you used:
- 30572 strings out of 476025
- 573032 string characters out of 5790018
- 1914388 words of memory out of 5000000
+ 30573 strings out of 476025
+ 573088 string characters out of 5790018
+ 1913388 words of memory out of 5000000
  49609 multiletter control sequences out of 15000+600000
  641194 words of font info for 597 fonts, out of 8000000 for 9000
  1142 hyphenation exceptions out of 8191
@@ -1436,7 +1435,7 @@ cal/texlive/2023/texmf-dist/fonts/type1/urw/times/utmb8a.pfb></usr/local/texliv
 e/2023/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></usr/local/texlive/2023/tex
 mf-dist/fonts/type1/urw/times/utmri8a.pfb></usr/local/texlive/2023/texmf-dist/f
 onts/type1/urw/zapfchan/uzcmi8a.pfb>
-Output written on paper.pdf (18 pages, 1484386 bytes).
+Output written on paper.pdf (18 pages, 1484261 bytes).
 PDF statistics:
  1743 PDF objects out of 2073 (max. 8388607)
  804 compressed objects within 9 object streams
